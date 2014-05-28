@@ -1,0 +1,1 @@
+# An easy way to intergrate Database Settings with Laravel
