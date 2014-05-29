@@ -22,6 +22,9 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('get')->andReturn(false);
 		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -49,6 +52,22 @@ class SettingSpec extends ObjectBehavior
 
 		$this->set('test', 'thevalue')->shouldReturn(true);
 		$this->get('test')->shouldReturn('thevalue');
+	}
+
+	function it_can_set_an_already_set_setting()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('get')->andReturn(true);
+		$query->shouldReceive('update')->andReturn(true);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+
+		$this->beConstructedWith($query, $repository);
+
+		$this->set('test', 'thevalue')->shouldReturn(true);
 	}
 
 	function it_can_get_a_setting_with_a_default_value()
