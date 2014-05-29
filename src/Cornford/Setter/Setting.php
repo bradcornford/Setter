@@ -14,10 +14,19 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function set($key, $value)
 	{
-		$result = $this->database
-			->table('settings')->insert(
+		$query = $this->database
+			->table('settings');
+
+		if ($this->has($key)) {
+			$result = $query->where('key', $key)
+				->update(
+					array('value' => $value)
+				);
+		} else {
+			$result = $query->insert(
 				array('key' => $key, 'value' => $value)
 			);
+		}
 
 		if (!$result) {
 			return false;
@@ -91,7 +100,7 @@ class Setting extends SettingBase implements SettableInterface {
 			->table('settings')
 			->select('settings.value')
 			->where('settings.key', '=', $key)
-			->first();
+			->get();
 
 		return $result ?: false;
 	}
