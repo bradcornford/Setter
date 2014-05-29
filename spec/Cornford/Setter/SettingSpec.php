@@ -18,6 +18,9 @@ class SettingSpec extends ObjectBehavior
 	{
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
 		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('get')->andReturn(false);
 		$query->shouldReceive('insert')->andReturn(true);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -38,6 +41,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('first')->andReturn($mock);
+		$query->shouldReceive('get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -53,6 +57,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('table')->andReturn($query);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('get')->andReturn(false);
 		$query->shouldReceive('first')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -92,6 +97,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('delete')->andReturn(true);
 		$query->shouldReceive('first')->andReturn($mock);
+		$query->shouldReceive('get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -120,10 +126,10 @@ class SettingSpec extends ObjectBehavior
 	{
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
 		$query->shouldReceive('table')->andReturn($query);
-		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('update')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('first')->andReturn(true);
+		$query->shouldReceive('get')->andReturn(true);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -136,24 +142,22 @@ class SettingSpec extends ObjectBehavior
 	function it_can_check_a_value_is_not_set()
 	{
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
-		$query->shouldReceive('select')->andReturn($query);
-		$query->shouldReceive('table')->andReturn($query);
-		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('first')->andReturn(true);
+		$query->shouldReceive('table->select->where->get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
 		$this->beConstructedWith($query, $repository);
 
-		$this->has('test')->shouldReturn(true);
+		$this->has('test')->shouldReturn(false);
 	}
 
 	function it_can_get_all_set_values()
 	{
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
 		$query->shouldReceive('table')->andReturn($query);
-		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('update')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('get')->andReturn(array('test1' => 'thevalue', 'test2' => 'thevalue'));
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -165,7 +169,7 @@ class SettingSpec extends ObjectBehavior
 		$this->all()->shouldReturn(array('test1' => 'thevalue', 'test2' => 'thevalue'));
 	}
 
-	function it_can_check_clear_all_set_values()
+	function it_can_clear_all_set_values()
 	{
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
 		$query->shouldReceive('table')->andReturn($query);
@@ -173,7 +177,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('from')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('first')->andReturn(false);
+		$query->shouldReceive('get')->andReturn(false);
 		$query->shouldReceive('truncate')->andReturn(true);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
