@@ -177,7 +177,8 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('update')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('get')->andReturn(array('test1' => 'thevalue', 'test2' => 'thevalue'));
+		$query->shouldReceive('get')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array('test1' => 'thevalue', 'test2' => 'thevalue'));
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 

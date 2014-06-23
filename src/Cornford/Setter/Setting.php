@@ -102,7 +102,7 @@ class Setting extends SettingBase implements SettableInterface {
 			->where('settings.key', '=', $key)
 			->get();
 
-		return $result ?: false;
+		return $result ? true : false;
 	}
 
 	/**
@@ -114,10 +114,9 @@ class Setting extends SettingBase implements SettableInterface {
 	{
 		$result = $this->database
 			->table('settings')
-			->select('settings.key', 'settings.value')
-			->get();
+			->lists('value', 'key');
 
-		return json_decode(json_encode($result), true);
+		return $result;
 	}
 
 	/**
