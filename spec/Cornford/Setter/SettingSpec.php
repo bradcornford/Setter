@@ -35,15 +35,13 @@ class SettingSpec extends ObjectBehavior
 
 	function it_can_get_a_setting()
 	{
-		$mock = Mockery::mock();
-		$mock->value = 'thevalue';
-
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
 		$query->shouldReceive('table')->andReturn($query);
 		$query->shouldReceive('insert')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('first')->andReturn($mock);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array('test' => 'thevalue'));
 		$query->shouldReceive('get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -76,8 +74,9 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('table')->andReturn($query);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('get')->andReturn(false);
-		$query->shouldReceive('first')->andReturn(false);
+		$query->shouldReceive('lists')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -92,7 +91,8 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('table')->andReturn($query);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('first')->andReturn(false);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 		$repository->shouldReceive('has')->andReturn(true);
@@ -105,17 +105,15 @@ class SettingSpec extends ObjectBehavior
 
 	function it_can_forget_a_set_value()
 	{
-		$mock = Mockery::mock();
-		$mock->value = 'thevalue';
-
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
 		$query->shouldReceive('table')->andReturn($query);
 		$query->shouldReceive('insert')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('from')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('delete')->andReturn(true);
-		$query->shouldReceive('first')->andReturn($mock);
+		$query->shouldReceive('lists')->andReturn(array('test' => 'thevalue'));
 		$query->shouldReceive('get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');

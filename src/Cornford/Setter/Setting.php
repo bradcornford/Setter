@@ -28,11 +28,7 @@ class Setting extends SettingBase implements SettableInterface {
 			);
 		}
 
-		if (!$result) {
-			return false;
-		}
-
-		return true;
+		return $result ? true : false;
 	}
 
 	/**
@@ -45,14 +41,18 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function get($key, $default = null)
 	{
-		$result = $this->database
+		$results = $this->database
 			->table('settings')
-			->select('settings.value')
 			->where('settings.key', '=', $key)
-			->first();
+			->whereRaw('settings.key LIKE "' . $key . '.%"', array(), 'or')
+			->lists('value', 'key');
 
-		if ($result) {
-			return $result->value;
+		if ($results) {
+			if (count($results) > 1) {
+				return $this->arrangeResults($results);
+			}
+
+			return $results[$key];
 		}
 
 		if ($default) {
@@ -80,11 +80,7 @@ class Setting extends SettingBase implements SettableInterface {
 			->where('key', '=', $key)
 			->delete();
 
-		if (!$result) {
-			return false;
-		}
-
-		return true;
+		return $result ? true : false;
 	}
 
 	/**
@@ -112,11 +108,11 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function all()
 	{
-		$result = $this->database
+		$results = $this->database
 			->table('settings')
 			->lists('value', 'key');
 
-		return $result;
+		return $this->arrangeResults($results);
 	}
 
 	/**
@@ -130,7 +126,31 @@ class Setting extends SettingBase implements SettableInterface {
 			->table('settings')
 			->truncate();
 
-		return $result ?: false;
+		return $result ? true : false;
 	}
 
+	/**
+	 * Arrange results into an associative array
+	 *
+	 * @param array $results
+	 *
+	 * @return array
+	 */
+	private function arrangeResults($results)
+	{
+		$return = array();
+
+		foreach ($results as $path => $value) {
+			$parts = explode('.', $path);
+			$target =& $return;
+
+			foreach ($parts as $part) {
+				$target =& $target[$part];
+			}
+
+			$target = $value;
+		}
+
+		return $return;
+	}
 }
