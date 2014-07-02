@@ -20,11 +20,11 @@ class Setting extends SettingBase implements SettableInterface {
 		if ($this->has($key)) {
 			$result = $query->where('key', $key)
 				->update(
-					array('value' => $value)
+					array('value' => json_encode($value))
 				);
 		} else {
 			$result = $query->insert(
-				array('key' => $key, 'value' => $value)
+				array('key' => $key, 'value' => json_encode($value))
 			);
 		}
 
@@ -52,7 +52,7 @@ class Setting extends SettingBase implements SettableInterface {
 				return $this->arrangeResults($results);
 			}
 
-			return $results[$key];
+			return json_decode($results[$key]);
 		}
 
 		if ($default) {
@@ -148,7 +148,7 @@ class Setting extends SettingBase implements SettableInterface {
 				$target =& $target[$part];
 			}
 
-			$target = $value;
+			$target = json_decode($value);
 		}
 
 		return $return;
