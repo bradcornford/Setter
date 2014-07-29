@@ -224,7 +224,7 @@ class SettingSpec extends ObjectBehavior
 
         $this->set('test.test1', 'thevalue')->shouldReturn(true);
         $this->set('test.test2', 'thevalue')->shouldReturn(true);
-        $this->get('test')->shouldReturn(array('test' => array('test1' => 'thevalue', 'test2' => 'thevalue')));
+        $this->get('test')->shouldReturn(array('test1' => 'thevalue', 'test2' => 'thevalue'));
     }
 
     function it_can_set_an_array_setting()

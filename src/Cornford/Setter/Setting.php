@@ -49,7 +49,7 @@ class Setting extends SettingBase implements SettableInterface {
 
 		if ($results) {
 			if (count($results) > 1) {
-				return $this->arrangeResults($results);
+				return $this->arrangeResults($results, $key);
 			}
 
 			return json_decode($results[$key]);
@@ -132,16 +132,16 @@ class Setting extends SettingBase implements SettableInterface {
 	/**
 	 * Arrange results into an associative array
 	 *
-	 * @param array $results
+	 * @param array  $results
+	 * @param string $key
 	 *
 	 * @return array
 	 */
-	private function arrangeResults($results)
+	private function arrangeResults($results, $key = null)
 	{
 		$return = array();
-
 		foreach ($results as $path => $value) {
-			$parts = explode('.', $path);
+			$parts = explode('.', trim(preg_replace('/^' . $key . '/', '', $path), '.'));
 			$target =& $return;
 
 			foreach ($parts as $part) {
