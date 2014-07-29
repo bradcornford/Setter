@@ -52,7 +52,7 @@ class Setting extends SettingBase implements SettableInterface {
 				return $this->arrangeResults($results, $key);
 			}
 
-			return json_decode($results[$key]);
+			return json_decode($results[$key]) ?: $results[$key];
 		}
 
 		if ($default) {
@@ -148,7 +148,7 @@ class Setting extends SettingBase implements SettableInterface {
 				$target =& $target[$part];
 			}
 
-			$target = json_decode($value);
+			$target = json_decode($value) ?: $value;
 		}
 
 		return $return;
