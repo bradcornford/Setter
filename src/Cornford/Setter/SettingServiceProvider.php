@@ -32,7 +32,8 @@ class SettingServiceProvider extends ServiceProvider {
 		{
 			return new Setting(
 				$this->app->make('Illuminate\Database\DatabaseManager'),
-				$this->app->make('Illuminate\Config\Repository')
+				$this->app->make('Illuminate\Config\Repository'),
+				$this->app->make('Illuminate\Cache\Repository')
 			);
 		});
 	}

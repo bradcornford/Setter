@@ -7,26 +7,26 @@ class Setting extends SettingBase implements SettableInterface {
 	/**
 	 * Set a setting by key and value
 	 *
-	 * @param string $key
-	 * @param string $value
+	 * @param string  $key
+	 * @param string  $value
+	 * @param integer $expiry
 	 *
 	 * @return boolean
 	 */
-	public function set($key, $value)
+	public function set($key, $value, $expiry = 0)
 	{
 		$query = $this->database
 			->table('settings');
+		$value = json_encode($value);
 
 		if ($this->has($key)) {
 			$result = $query->where('key', $key)
-				->update(
-					array('value' => json_encode($value))
-				);
+				->update(array('value' => $value));
 		} else {
-			$result = $query->insert(
-				array('key' => $key, 'value' => json_encode($value))
-			);
+			$result = $query->insert(array('key' => $key, 'value' => $value));
 		}
+
+		$this->cache->add($this->attachTag($key), $value, $expiry);
 
 		return $result ? true : false;
 	}
@@ -34,13 +34,18 @@ class Setting extends SettingBase implements SettableInterface {
 	/**
 	 * Get a setting by key, optionally set a default or fallback to config lookup
 	 *
-	 * @param string $key
-	 * @param string $default
+	 * @param string  $key
+	 * @param string  $default
+	 * @param integer $expiry
 	 *
 	 * @return string
 	 */
-	public function get($key, $default = null)
+	public function get($key, $default = null, $expiry = 0)
 	{
+		if ($this->cache->has($this->attachTag($key))) {
+			return $this->cache->get($this->attachTag($key));
+		}
+
 		$results = $this->database
 			->table('settings')
 			->where('settings.key', '=', $key)
@@ -49,8 +54,13 @@ class Setting extends SettingBase implements SettableInterface {
 
 		if ($results) {
 			if (count($results) > 1) {
-				return $this->arrangeResults($results, $key);
+				$results = $this->arrangeResults($results, $key);
+				$this->cache->add($this->attachTag($key), $results, $expiry);
+
+				return $results;
 			}
+
+			$this->cache->add($this->attachTag($key), json_decode($results[$key]), $expiry);
 
 			return json_decode($results[$key]) ?: $results[$key];
 		}
@@ -80,6 +90,8 @@ class Setting extends SettingBase implements SettableInterface {
 			->where('key', '=', $key)
 			->delete();
 
+		$this->cache->forget($this->attachTag($key));
+
 		return $result ? true : false;
 	}
 
@@ -108,11 +120,16 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function all()
 	{
-		$results = $this->database
-			->table('settings')
-			->lists('value', 'key');
+		$key = $this->attachTag('all');
 
-		return $this->arrangeResults($results);
+		if (!$this->cache->has($key)) {
+			$results = $this->database
+				->table('settings')
+				->lists('value', 'key');
+			$this->cache->put($key, $results, 0);
+		}
+
+		return $this->arrangeResults($this->cache->get($key));
 	}
 
 	/**
@@ -126,31 +143,8 @@ class Setting extends SettingBase implements SettableInterface {
 			->table('settings')
 			->truncate();
 
+		$this->cache->flush();
+
 		return $result ? true : false;
-	}
-
-	/**
-	 * Arrange results into an associative array
-	 *
-	 * @param array  $results
-	 * @param string $key
-	 *
-	 * @return array
-	 */
-	private function arrangeResults($results, $key = null)
-	{
-		$return = array();
-		foreach ($results as $path => $value) {
-			$parts = explode('.', trim(preg_replace('/^' . $key . '/', '', $path), '.'));
-			$target =& $return;
-
-			foreach ($parts as $part) {
-				$target =& $target[$part];
-			}
-
-			$target = json_decode($value) ?: $value;
-		}
-
-		return $return;
 	}
 }
