@@ -7,22 +7,20 @@ interface SettableInterface {
 	 *
 	 * @param string  $key
 	 * @param string  $value
-	 * @param integer $expiry
 	 *
 	 * @return boolean
 	 */
-	public function set($key, $value, $expiry = 0);
+	public function set($key, $value);
 
 	/**
 	 * Get a setting by key, optionally set a default or fallback to config lookup
 	 *
 	 * @param string  $key
 	 * @param string  $default
-	 * @param integer $expiry
 	 *
 	 * @return string
 	 */
-	public function get($key, $default = null, $expiry = 0);
+	public function get($key, $default = null);
 
 	/**
 	 * Forget a setting by key
@@ -55,5 +53,14 @@ interface SettableInterface {
 	 * @return boolean
 	 */
 	public function clear();
+
+	/**
+	 * Set the cache expiry
+	 *
+	 * @param boolean|integer|datetime $expiry
+	 *
+	 * @return self
+	 */
+	public function expires($expiry);
 
 }

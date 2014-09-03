@@ -1,6 +1,7 @@
 <?php namespace Cornford\Setter;
 
 use Cornford\Setter\Contracts\SettableInterface;
+use Cornford\Setter\Exceptions\SettingVariableException;
 
 class Setting extends SettingBase implements SettableInterface {
 
@@ -9,11 +10,10 @@ class Setting extends SettingBase implements SettableInterface {
 	 *
 	 * @param string  $key
 	 * @param string  $value
-	 * @param integer $expiry
 	 *
 	 * @return boolean
 	 */
-	public function set($key, $value, $expiry = 0)
+	public function set($key, $value)
 	{
 		$query = $this->database
 			->table('settings');
@@ -26,7 +26,7 @@ class Setting extends SettingBase implements SettableInterface {
 			$result = $query->insert(array('key' => $key, 'value' => $value));
 		}
 
-		$this->cache->add($this->attachTag($key), $value, $expiry);
+		$this->cache->add($this->attachTag($key), $value, $this->expiry);
 
 		return $result ? true : false;
 	}
@@ -36,11 +36,10 @@ class Setting extends SettingBase implements SettableInterface {
 	 *
 	 * @param string  $key
 	 * @param string  $default
-	 * @param integer $expiry
 	 *
 	 * @return string
 	 */
-	public function get($key, $default = null, $expiry = 0)
+	public function get($key, $default = null)
 	{
 		if ($this->cache->has($this->attachTag($key))) {
 			return $this->cache->get($this->attachTag($key));
@@ -55,12 +54,12 @@ class Setting extends SettingBase implements SettableInterface {
 		if ($results) {
 			if (count($results) > 1) {
 				$results = $this->arrangeResults($results, $key);
-				$this->cache->add($this->attachTag($key), $results, $expiry);
+				$this->cache->add($this->attachTag($key), $results, $this->expiry);
 
 				return $results;
 			}
 
-			$this->cache->add($this->attachTag($key), json_decode($results[$key]), $expiry);
+			$this->cache->add($this->attachTag($key), json_decode($results[$key]), $this->expiry);
 
 			return json_decode($results[$key]) ?: $results[$key];
 		}
@@ -104,11 +103,15 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function has($key)
 	{
-		$result = $this->database
-			->table('settings')
-			->select('settings.value')
-			->where('settings.key', '=', $key)
-			->get();
+		if ($this->cache->has($this->attachTag($key))) {
+			$result = $this->cache->get($this->attachTag($key));
+		} else {
+			$result = $this->database
+				->table('settings')
+				->select('settings.value')
+				->where('settings.key', '=', $key)
+				->get();
+		}
 
 		return $result ? true : false;
 	}
@@ -120,16 +123,11 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function all()
 	{
-		$key = $this->attachTag('all');
+		$results = $this->database
+			->table('settings')
+			->lists('value', 'key');
 
-		if (!$this->cache->has($key)) {
-			$results = $this->database
-				->table('settings')
-				->lists('value', 'key');
-			$this->cache->put($key, $results, 0);
-		}
-
-		return $this->arrangeResults($this->cache->get($key));
+		return $this->arrangeResults($results);
 	}
 
 	/**
@@ -146,5 +144,25 @@ class Setting extends SettingBase implements SettableInterface {
 		$this->cache->flush();
 
 		return $result ? true : false;
+	}
+
+	/**
+	 * Set the cache expiry
+	 *
+	 * @param boolean|integer|datetime $expiry
+	 *
+	 * @throws SettingVariableException
+	 *
+	 * @return self
+	 */
+	public function expires($expiry)
+	{
+		if (!is_bool($expiry) && !is_integer($expiry) && !$expiry instanceof DateTime) {
+			throw new SettingVariableException('Invalid expiry value.');
+		}
+
+		$this->expiry = $expiry;
+
+		return $this;
 	}
 }

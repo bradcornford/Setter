@@ -33,6 +33,13 @@ abstract class SettingBase {
 	protected $cache;
 
 	/**
+	 * Cache
+	 *
+	 * @var integer|datetime|boolean
+	 */
+	protected $expiry = false;
+
+	/**
 	 * Construct Setter
 	 *
 	 * @param Query      $database

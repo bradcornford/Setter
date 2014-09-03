@@ -96,6 +96,13 @@ This doesn't fall back to removing application configuration variables.
 
 	Setting::clear();
 
+### Expires
+
+The `expires` sets the cache expiry setting.
+Can be false to not cache, true / 0 to cache indefinitely, an integer for minutes, or a datetime of when to expire.
+
+	Setting::expires(false);
+
 ### License
 
 Setter is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
