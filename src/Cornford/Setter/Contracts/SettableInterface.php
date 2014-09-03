@@ -59,6 +59,8 @@ interface SettableInterface {
 	 *
 	 * @param boolean|integer|datetime $expiry
 	 *
+	 * @throws SettingVariableException
+	 *
 	 * @return self
 	 */
 	public function expires($expiry);

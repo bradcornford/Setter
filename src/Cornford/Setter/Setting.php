@@ -157,7 +157,7 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function expires($expiry)
 	{
-		if (!is_bool($expiry) && !is_integer($expiry) && !$expiry instanceof DateTime) {
+		if (!is_bool($expiry) && !is_integer($expiry) && !$expiry instanceof \DateTime) {
 			throw new SettingVariableException('Invalid expiry value.');
 		}
 
