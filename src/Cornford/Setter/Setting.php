@@ -41,8 +41,8 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function get($key, $default = null)
 	{
-		if ($this->cache->has($this->attachTag($key))) {
-			return $this->cache->get($this->attachTag($key));
+		if ($this->cacheHas($key)) {
+			return $this->returnCache($key);
 		}
 
 		$results = $this->database
@@ -51,26 +51,16 @@ class Setting extends SettingBase implements SettableInterface {
 			->whereRaw('settings.key LIKE "' . $key . '.%"', array(), 'or')
 			->lists('value', 'key');
 
-		if ($results && count($results) > 1) {
-				$results = $this->arrangeResults($results, $key);
-				$this->cache->add($this->attachTag($key), $results, $this->expiry);
-
-				return $results;
-		}
-
 		if ($results) {
-			$result = json_decode($results[$key]) ?: $results[$key];
-			$this->cache->add($this->attachTag($key), $result, $this->expiry);
-
-			return $result;
+			return $this->returnResults($results, $key);
 		}
 
 		if ($default) {
 			return $default;
 		}
 
-		if ($this->config->has($key)) {
-			return $this->config->get($key);
+		if ($this->configHas($key)) {
+			return $this->returnConfig($key);
 		}
 
 		return false;

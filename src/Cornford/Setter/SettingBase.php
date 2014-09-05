@@ -68,6 +68,30 @@ abstract class SettingBase {
 	}
 
 	/**
+	 * Check a setting exists in cache
+	 *
+	 * @param string $key
+	 *
+	 * @return boolean
+	 */
+	public function cacheHas($key)
+	{
+		return $this->cache->has($this->attachTag($key)) ? true : false;
+	}
+
+	/**
+	 * Check a setting exists in config
+	 *
+	 * @param string $key
+	 *
+	 * @return boolean
+	 */
+	public function configHas($key)
+	{
+		return $this->config->has($key) ? true : false;
+	}
+
+	/**
 	 * Arrange results into an associative array
 	 *
 	 * @param array  $results
@@ -90,6 +114,55 @@ abstract class SettingBase {
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Return result values
+	 *
+	 * @param string|array $results
+	 * @param string       $key
+	 *
+	 * @return string|array
+	 */
+	protected function returnResults($results, $key)
+	{
+		if ($results && count($results) > 1) {
+			$results = $this->arrangeResults($results, $key);
+			$this->cache->add($this->attachTag($key), $results, $this->expiry);
+
+			return $results;
+		}
+
+		if ($results) {
+			$result = json_decode($results[$key]) ?: $results[$key];
+			$this->cache->add($this->attachTag($key), $result, $this->expiry);
+
+			return $result;
+		}
+	}
+
+	/**
+	 * Return cache values
+	 *
+	 * @param string $key
+	 *
+	 * @return string|array
+	 */
+	protected function returnCache($key)
+	{
+		return $this->cache->get($this->attachTag($key));
+	}
+
+	/**
+	 * Return config values
+	 *
+	 * @param string $key
+	 *
+	 * @return string|array
+	 */
+	protected function returnConfig($key)
+	{
+		return $this->config->get($key);
 	}
 
 }
