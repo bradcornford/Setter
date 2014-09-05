@@ -119,8 +119,8 @@ abstract class SettingBase {
 	/**
 	 * Return result values
 	 *
-	 * @param string|array $results
-	 * @param string       $key
+	 * @param array  $results
+	 * @param string $key
 	 *
 	 * @return string|array
 	 */
