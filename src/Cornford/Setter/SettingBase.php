@@ -37,7 +37,7 @@ abstract class SettingBase {
 	 *
 	 * @var integer|datetime|boolean
 	 */
-	protected $expiry = false;
+	protected $expiry = true;
 
 	/**
 	 * Construct Setter

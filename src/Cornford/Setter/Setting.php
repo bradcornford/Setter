@@ -51,17 +51,18 @@ class Setting extends SettingBase implements SettableInterface {
 			->whereRaw('settings.key LIKE "' . $key . '.%"', array(), 'or')
 			->lists('value', 'key');
 
-		if ($results) {
-			if (count($results) > 1) {
+		if ($results && count($results) > 1) {
 				$results = $this->arrangeResults($results, $key);
 				$this->cache->add($this->attachTag($key), $results, $this->expiry);
 
 				return $results;
-			}
+		}
 
-			$this->cache->add($this->attachTag($key), json_decode($results[$key]), $this->expiry);
+		if ($results) {
+			$result = json_decode($results[$key]) ?: $results[$key];
+			$this->cache->add($this->attachTag($key), $result, $this->expiry);
 
-			return json_decode($results[$key]) ?: $results[$key];
+			return $result;
 		}
 
 		if ($default) {
