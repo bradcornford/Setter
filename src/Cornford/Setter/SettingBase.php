@@ -110,7 +110,7 @@ abstract class SettingBase {
 				$target =& $target[$part];
 			}
 
-			$target = json_decode($value) ?: $value;
+			$target = @json_decode($value) ?: $value;
 		}
 
 		return $return;
@@ -134,7 +134,7 @@ abstract class SettingBase {
 		}
 
 		if ($results) {
-			$result = json_decode($results[$key]) ?: $results[$key];
+			$result = @json_decode($results[$key]) ?: $results[$key];
 			$this->cache->add($this->attachTag($key), $result, $this->expiry);
 
 			return $result;
