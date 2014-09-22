@@ -26,7 +26,10 @@ class Setting extends SettingBase implements SettableInterface {
 			$result = $query->insert(array('key' => $key, 'value' => $value));
 		}
 
-		$this->cache->add($this->attachTag($key), $value, $this->expiry);
+		$this->cache
+			->forget($this->attachTag($key));
+		$this->cache
+			->add($this->attachTag($key), $value, $this->expiry);
 
 		return $result ? true : false;
 	}
@@ -80,7 +83,8 @@ class Setting extends SettingBase implements SettableInterface {
 			->where('key', '=', $key)
 			->delete();
 
-		$this->cache->forget($this->attachTag($key));
+		$this->cache
+			->forget($this->attachTag($key));
 
 		return $result ? true : false;
 	}
@@ -95,7 +99,8 @@ class Setting extends SettingBase implements SettableInterface {
 	public function has($key)
 	{
 		if ($this->cache->has($this->attachTag($key))) {
-			$result = $this->cache->get($this->attachTag($key));
+			$result = $this->cache
+				->get($this->attachTag($key));
 		} else {
 			$result = $this->database
 				->table('settings')
@@ -132,7 +137,8 @@ class Setting extends SettingBase implements SettableInterface {
 			->table('settings')
 			->truncate();
 
-		$this->cache->flush();
+		$this->cache
+			->flush();
 
 		return $result ? true : false;
 	}

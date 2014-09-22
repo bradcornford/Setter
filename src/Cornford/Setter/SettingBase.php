@@ -128,6 +128,7 @@ abstract class SettingBase {
 	{
 		if ($results && count($results) > 1) {
 			$results = $this->arrangeResults($results, $key);
+            $this->cache->forget($this->attachTag($key));
 			$this->cache->add($this->attachTag($key), $results, $this->expiry);
 
 			return $results;
@@ -135,6 +136,7 @@ abstract class SettingBase {
 
 		if ($results) {
 			$result = @json_decode($results[$key]) ?: $results[$key];
+            $this->cache->forget($this->attachTag($key));
 			$this->cache->add($this->attachTag($key), $result, $this->expiry);
 
 			return $result;

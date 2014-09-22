@@ -32,6 +32,7 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
+        $cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
@@ -54,6 +55,7 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
+		$cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
@@ -75,6 +77,7 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
+        $cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
@@ -182,6 +185,7 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
+        $cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
@@ -219,6 +223,7 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
+        $cache->shouldReceive('forget')->andReturn(true);
 		$cache->shouldReceive('put')->andReturn(true);
 		$cache->shouldReceive('get')->andReturn(array('test1' => '"thevalue"', 'test2' => '"thevalue"'));
 
@@ -247,6 +252,7 @@ class SettingSpec extends ObjectBehavior
 		$cache->shouldReceive('has')->andReturn(false);
 		$cache->shouldReceive('put')->andReturn(true);
 		$cache->shouldReceive('flush')->andReturn(true);
+        $cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
@@ -271,6 +277,7 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
+        $cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
@@ -296,6 +303,7 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
+        $cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
@@ -319,6 +327,7 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
+        $cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
@@ -341,6 +350,7 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(true);
+        $cache->shouldReceive('forget')->andReturn(true);
 		$cache->shouldReceive('get')->andReturn('thevalue');
 
 		$this->beConstructedWith($query, $repository, $cache);
