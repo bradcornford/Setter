@@ -40,7 +40,7 @@ class Setting extends SettingBase implements SettableInterface {
 	 * @param string  $key
 	 * @param string  $default
 	 *
-	 * @return string
+	 * @return string|array|boolean
 	 */
 	public function get($key, $default = null)
 	{

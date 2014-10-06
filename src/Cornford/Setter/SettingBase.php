@@ -128,7 +128,7 @@ abstract class SettingBase {
 	{
 		if ($results && count($results) > 1) {
 			$results = $this->arrangeResults($results, $key);
-            $this->cache->forget($this->attachTag($key));
+			$this->cache->forget($this->attachTag($key));
 			$this->cache->add($this->attachTag($key), $results, $this->expiry);
 
 			return $results;
@@ -136,7 +136,7 @@ abstract class SettingBase {
 
 		if ($results) {
 			$result = @json_decode($results[$key]) ?: $results[$key];
-            $this->cache->forget($this->attachTag($key));
+			$this->cache->forget($this->attachTag($key));
 			$this->cache->add($this->attachTag($key), $result, $this->expiry);
 
 			return $result;
@@ -152,7 +152,9 @@ abstract class SettingBase {
 	 */
 	protected function returnCache($key)
 	{
-		return $this->cache->get($this->attachTag($key));
+		$value = $this->cache->get($this->attachTag($key));
+
+		return @json_decode($value) ?: $value;
 	}
 
 	/**
@@ -164,7 +166,9 @@ abstract class SettingBase {
 	 */
 	protected function returnConfig($key)
 	{
-		return $this->config->get($key);
+		$value = $this->config->get($key);
+
+		return @json_decode($value) ?: $value;
 	}
 
 }
