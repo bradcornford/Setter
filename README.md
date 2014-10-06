@@ -13,6 +13,7 @@ Think of Setter as an easy way to integrate Settings with Laravel 4, providing a
 - `Setting::has`
 - `Setting::all`
 - `Setting::clear`
+- `Setting::expires`
 
 ## Installation
 
@@ -54,6 +55,7 @@ This will give you access to
 - [Has](#has)
 - [All](#all)
 - [Clear](#clear)
+- [Expires](#expires)
 
 ### Set
 
