@@ -2,9 +2,15 @@
 
 use PhpSpec\ObjectBehavior;
 use Mockery;
+use stdClass;
 
 class SettingSpec extends ObjectBehavior
 {
+	const KEY = 'test';
+	const STRING = 'value';
+	const INTEGER = 1;
+	const BOOLEAN = true;
+
 	function it_is_initializable()
 	{
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
@@ -32,11 +38,11 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
-        $cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test', 'thevalue')->shouldReturn(true);
+		$this->set(self::KEY, self::STRING)->shouldReturn(true);
 	}
 
 	function it_can_get_a_setting()
@@ -47,7 +53,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
-		$query->shouldReceive('lists')->andReturn(array('test' => '"thevalue"'));
+		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::STRING)));
 		$query->shouldReceive('get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -59,8 +65,8 @@ class SettingSpec extends ObjectBehavior
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test', 'thevalue')->shouldReturn(true);
-		$this->get('test')->shouldReturn('thevalue');
+		$this->set(self::KEY, self::STRING)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn(self::STRING);
 	}
 
 	function it_can_set_an_already_set_setting()
@@ -77,11 +83,11 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
-        $cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test', 'thevalue')->shouldReturn(true);
+		$this->set(self::KEY, self::STRING)->shouldReturn(true);
 	}
 
 	function it_can_get_a_setting_with_a_default_value()
@@ -102,7 +108,7 @@ class SettingSpec extends ObjectBehavior
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->get('test', 'thevalue')->shouldReturn('thevalue');
+		$this->get(self::KEY, self::STRING)->shouldReturn(self::STRING);
 	}
 
 	function it_can_get_a_setting_from_a_config_value()
@@ -116,7 +122,7 @@ class SettingSpec extends ObjectBehavior
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 		$repository->shouldReceive('has')->andReturn(true);
-		$repository->shouldReceive('get')->andReturn('thevalue');
+		$repository->shouldReceive('get')->andReturn(self::STRING);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -124,7 +130,7 @@ class SettingSpec extends ObjectBehavior
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->get('testconfig')->shouldReturn('thevalue');
+		$this->get(self::KEY)->shouldReturn(self::STRING);
 	}
 
 	function it_can_forget_a_set_setting()
@@ -137,7 +143,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('delete')->andReturn(true);
-		$query->shouldReceive('lists')->andReturn(array('test' => '"thevalue"'));
+		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::STRING)));
 		$query->shouldReceive('get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -149,9 +155,9 @@ class SettingSpec extends ObjectBehavior
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test', 'thevalue')->shouldReturn(true);
-		$this->get('test')->shouldReturn('thevalue');
-		$this->forget('test')->shouldReturn(true);
+		$this->set(self::KEY, self::STRING)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn(self::STRING);
+		$this->forget(self::KEY)->shouldReturn(true);
 	}
 
 	function it_cant_forget_an_unset_setting()
@@ -168,7 +174,7 @@ class SettingSpec extends ObjectBehavior
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->forget('test')->shouldReturn(false);
+		$this->forget(self::KEY)->shouldReturn(false);
 	}
 
 	function it_can_check_a_setting_is_set()
@@ -185,12 +191,12 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
-        $cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test', 'thevalue')->shouldReturn(true);
-		$this->has('test')->shouldReturn(true);
+		$this->set(self::KEY, self::STRING)->shouldReturn(true);
+		$this->has(self::KEY)->shouldReturn(true);
 	}
 
 	function it_can_check_a_setting_is_not_set()
@@ -205,33 +211,35 @@ class SettingSpec extends ObjectBehavior
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->has('test')->shouldReturn(false);
+		$this->has(self::KEY)->shouldReturn(false);
 	}
 
 	function it_can_get_all_set_settings()
 	{
+		$array = array(self::KEY . '1' =>  json_encode(self::STRING), self::KEY . '2' =>  json_encode(self::INTEGER));
+
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
 		$query->shouldReceive('table')->andReturn($query);
 		$query->shouldReceive('update')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('get')->andReturn($query);
-		$query->shouldReceive('lists')->andReturn(array('test1' => '"thevalue"', 'test2' => '"thevalue"'));
+		$query->shouldReceive('lists')->andReturn($array);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
-        $cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('forget')->andReturn(true);
 		$cache->shouldReceive('put')->andReturn(true);
-		$cache->shouldReceive('get')->andReturn(array('test1' => '"thevalue"', 'test2' => '"thevalue"'));
+		$cache->shouldReceive('get')->andReturn($array);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test1', 'thevalue')->shouldReturn(true);
-		$this->set('test2', 'thevalue')->shouldReturn(true);
-		$this->all()->shouldReturn(array('test1' => 'thevalue', 'test2' => 'thevalue'));
+		$this->set(self::KEY . '1', self::STRING)->shouldReturn(true);
+		$this->set(self::KEY . '2', self::STRING)->shouldReturn(true);
+		$this->all()->shouldReturn(array(self::KEY . '1' => self::STRING, self::KEY . '2' => self::INTEGER));
 	}
 
 	function it_can_clear_all_set_settings()
@@ -252,24 +260,26 @@ class SettingSpec extends ObjectBehavior
 		$cache->shouldReceive('has')->andReturn(false);
 		$cache->shouldReceive('put')->andReturn(true);
 		$cache->shouldReceive('flush')->andReturn(true);
-        $cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test', 'thevalue')->shouldReturn(true);
+		$this->set(self::KEY, self::STRING)->shouldReturn(true);
 		$this->clear()->shouldReturn(true);
-		$this->has('test')->shouldReturn(false);
+		$this->has(self::KEY)->shouldReturn(false);
 	}
 
 	function it_can_get_an_array_child_settings()
 	{
+		$array = array(self::KEY . '.1' =>  json_encode(self::STRING), self::KEY . '.2' =>  json_encode(self::INTEGER));
+
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
 		$query->shouldReceive('table')->andReturn($query);
 		$query->shouldReceive('insert')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
-		$query->shouldReceive('lists')->andReturn(array('test.test1' => '"thevalue"', 'test.test2' => '"thevalue"'));
+		$query->shouldReceive('lists')->andReturn($array);
 		$query->shouldReceive('get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -277,13 +287,13 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
-        $cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test.test1', 'thevalue')->shouldReturn(true);
-		$this->set('test.test2', 'thevalue')->shouldReturn(true);
-		$this->get('test')->shouldReturn(array('test1' => 'thevalue', 'test2' => 'thevalue'));
+		$this->set(self::KEY . '.1', self::STRING)->shouldReturn(true);
+		$this->set(self::KEY . '.2', self::INTEGER)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn(array('1' => self::STRING, '2' => self::INTEGER));
 	}
 
 	function it_can_set_an_array_setting()
@@ -295,7 +305,8 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('get')->andReturn(false);
 		$query->shouldReceive('insert')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
-		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn($query);
 		$query->shouldReceive('get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -303,11 +314,12 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
-        $cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('get')->andReturn(array(self::STRING, self::STRING, self::STRING));
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test', array('thevalue', 'thevalue', 'thevalue'))->shouldReturn(true);
+		$this->set(self::KEY, array(self::STRING, self::STRING, self::STRING))->shouldReturn(true);
 	}
 
 	function it_can_set_a_setting_in_cache()
@@ -327,11 +339,11 @@ class SettingSpec extends ObjectBehavior
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
-        $cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test', 'thevalue')->shouldReturn(true);
+		$this->set(self::KEY, self::STRING)->shouldReturn(true);
 	}
 
 	function it_can_get_a_setting_from_cache()
@@ -343,20 +355,20 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('get')->andReturn(false);
-		$query->shouldReceive('update')->andReturn('thevalue');
+		$query->shouldReceive('update')->andReturn(self::STRING);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(true);
-        $cache->shouldReceive('forget')->andReturn(true);
-		$cache->shouldReceive('get')->andReturn('thevalue');
+		$cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('get')->andReturn(self::STRING);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->expires(0)->set('test', 'thevalue')->shouldReturn(true);
-		$this->get('test')->shouldReturn('thevalue');
+		$this->expires(0)->set(self::KEY, self::STRING)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn(self::STRING);
 	}
 
 	function it_can_forget_a_set_setting_in_cache()
@@ -370,20 +382,143 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('delete')->andReturn(true);
 		$query->shouldReceive('get')->andReturn(false);
-		$query->shouldReceive('update')->andReturn('thevalue');
+		$query->shouldReceive('update')->andReturn(self::STRING);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(true);
-		$cache->shouldReceive('get')->andReturn('thevalue');
+		$cache->shouldReceive('get')->andReturn(self::STRING);
 		$cache->shouldReceive('forget')->andReturn(true);
 
 		$this->beConstructedWith($query, $repository, $cache);
 
-		$this->set('test', 'thevalue')->shouldReturn(true);
-		$this->get('test')->shouldReturn('thevalue');
-		$this->forget('test')->shouldReturn(true);
+		$this->set(self::KEY, self::STRING)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn(self::STRING);
+		$this->forget(self::KEY)->shouldReturn(true);
+	}
+
+	function it_can_set_and_get_a_string_setting()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::STRING)));
+		$query->shouldReceive('get')->andReturn(false);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('add')->andReturn(true);
+		$cache->shouldReceive('has')->andReturn(false);
+		$cache->shouldReceive('forget')->andReturn(true);
+
+		$this->beConstructedWith($query, $repository, $cache);
+
+		$this->set(self::KEY, self::STRING)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn(self::STRING);
+	}
+
+	function it_can_set_and_get_an_integer_setting()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::INTEGER)));
+		$query->shouldReceive('get')->andReturn(false);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('add')->andReturn(true);
+		$cache->shouldReceive('has')->andReturn(false);
+		$cache->shouldReceive('forget')->andReturn(true);
+
+		$this->beConstructedWith($query, $repository, $cache);
+
+		$this->set(self::KEY, self::INTEGER)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn(self::INTEGER);
+	}
+
+	function it_can_set_and_get_a_boolean_setting()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::BOOLEAN)));
+		$query->shouldReceive('get')->andReturn(false);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('add')->andReturn(true);
+		$cache->shouldReceive('has')->andReturn(false);
+		$cache->shouldReceive('forget')->andReturn(true);
+
+		$this->beConstructedWith($query, $repository, $cache);
+
+		$this->set(self::KEY, self::BOOLEAN)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn(self::BOOLEAN);
+	}
+
+	function it_can_set_and_get_an_empty_setting()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array(self::KEY => ""));
+		$query->shouldReceive('get')->andReturn(false);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('add')->andReturn(true);
+		$cache->shouldReceive('has')->andReturn(false);
+		$cache->shouldReceive('forget')->andReturn(true);
+
+		$this->beConstructedWith($query, $repository, $cache);
+
+		$this->set(self::KEY, '')->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn('');
+	}
+
+	function it_can_set_and_get_an_object_setting()
+	{
+		$object = new stdClass();
+		$object->{self::KEY} = self::STRING;
+
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode($object)));
+		$query->shouldReceive('get')->andReturn(false);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('add')->andReturn(true);
+		$cache->shouldReceive('has')->andReturn(false);
+		$cache->shouldReceive('forget')->andReturn(true);
+
+		$this->beConstructedWith($query, $repository, $cache);
+
+		$this->set(self::KEY, $object)->shouldReturn(true);
+		$this->get(self::KEY)->shouldHaveType($object);
 	}
 }
