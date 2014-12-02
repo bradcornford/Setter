@@ -99,14 +99,13 @@ class Setting extends SettingBase implements SettableInterface {
 	public function has($key)
 	{
 		if ($this->cache->has($this->attachTag($key))) {
-			$result = $this->cache
-				->get($this->attachTag($key));
+			$result = true;
 		} else {
 			$result = $this->database
 				->table('settings')
 				->select('settings.value')
 				->where('settings.key', '=', $key)
-				->get();
+				->count();
 		}
 
 		return $result ? true : false;

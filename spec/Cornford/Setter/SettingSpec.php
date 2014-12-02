@@ -27,7 +27,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('table')->andReturn($query);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 		$query->shouldReceive('insert')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
@@ -52,6 +52,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('insert')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('count')->andReturn(0);
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::STRING)));
 		$query->shouldReceive('get')->andReturn(false);
@@ -75,7 +76,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('table')->andReturn($query);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('get')->andReturn(true);
+		$query->shouldReceive('count')->andReturn(1);
 		$query->shouldReceive('update')->andReturn(true);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -144,7 +145,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('delete')->andReturn(true);
 		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::STRING)));
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -184,7 +185,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('update')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('get')->andReturn(true);
+		$query->shouldReceive('count')->andReturn(1);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -202,7 +203,7 @@ class SettingSpec extends ObjectBehavior
 	function it_can_check_a_setting_is_not_set()
 	{
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
-		$query->shouldReceive('table->select->where->get')->andReturn(false);
+		$query->shouldReceive('table->select->where->count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -223,7 +224,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('update')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('get')->andReturn($query);
+		$query->shouldReceive('count')->andReturn(1);
 		$query->shouldReceive('lists')->andReturn($array);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -250,7 +251,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('from')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 		$query->shouldReceive('truncate')->andReturn(true);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
@@ -280,7 +281,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('lists')->andReturn($array);
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -307,7 +308,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('lists')->andReturn($query);
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -332,7 +333,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('insert')->andReturn(true);
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -408,7 +409,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::STRING)));
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -432,7 +433,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::INTEGER)));
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -456,7 +457,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::BOOLEAN)));
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -480,7 +481,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('lists')->andReturn(array(self::KEY => ""));
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
@@ -507,7 +508,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
 		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode($object)));
-		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
