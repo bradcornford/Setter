@@ -26,10 +26,7 @@ class Setting extends SettingBase implements SettableInterface {
 			$result = $query->insert(array('key' => $key, 'value' => $value));
 		}
 
-		$this->cache
-			->forget($this->attachTag($key));
-		$this->cache
-			->add($this->attachTag($key), $value, $this->expiry);
+		$this->recacheItem($value, $key);
 
 		return $result ? true : false;
 	}

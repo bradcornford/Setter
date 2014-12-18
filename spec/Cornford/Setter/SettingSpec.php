@@ -58,6 +58,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('get')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -148,6 +149,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -284,6 +286,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -359,6 +362,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('update')->andReturn(self::STRING);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -386,6 +390,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('update')->andReturn(self::STRING);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -412,6 +417,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -436,6 +442,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -460,6 +467,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -484,6 +492,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -511,6 +520,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('count')->andReturn(0);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
@@ -521,5 +531,37 @@ class SettingSpec extends ObjectBehavior
 
 		$this->set(self::KEY, $object)->shouldReturn(true);
 		$this->get(self::KEY)->shouldHaveType($object);
+	}
+
+	function it_can_merge_database_settings_with_config_settings()
+	{
+		$config = array(self::KEY . 1 => self::BOOLEAN, self::KEY . 2 => self::INTEGER);
+		$expectedConfig = array(self::KEY . 1 => self::STRING, self::KEY . 2 => self::INTEGER);
+
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->twice()->andReturnValues(
+			array(false, array(self::KEY . '.' . self::KEY . 1 => self::STRING))
+		);
+		$query->shouldReceive('count')->andReturn(0);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('has')->andReturn(true);
+		$repository->shouldReceive('get')->andReturn($config);
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('add')->andReturn(true);
+		$cache->shouldReceive('has')->andReturn(false);
+		$cache->shouldReceive('forget')->andReturn(true);
+
+		$this->beConstructedWith($query, $repository, $cache);
+
+		$this->get(self::KEY)->shouldReturn($config);
+		$this->set(self::KEY . '.' . self::KEY . 1, self::STRING)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn($expectedConfig);
 	}
 }
