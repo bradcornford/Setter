@@ -138,7 +138,8 @@ abstract class SettingBase {
 		}
 
 		if (count($return) == 1) {
-			$return = reset($results) == '""' ? '' : reset($results);
+			$firstResult = reset($results);
+			$return = $firstResult == '""' ? '' : $firstResult;
 			$return = @json_decode($return) ?: $return;
 		}
 
@@ -161,7 +162,7 @@ abstract class SettingBase {
 		$config = $this->returnConfig($key);
 
 		if (is_array($config)) {
-			return array_merge($config, $results);
+			return array_replace_recursive($config, $results);
 		}
 
 		return $results;
