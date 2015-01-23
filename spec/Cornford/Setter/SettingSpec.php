@@ -602,4 +602,57 @@ class SettingSpec extends ObjectBehavior
 		$this->set(self::KEY . '.' . self::KEY . 2 . '.' . self::KEY . 1, self::STRING)->shouldReturn(true);
 		$this->get(self::KEY)->shouldReturn($expectedConfig);
 	}
+
+	function it_can_forget_a_cached_setting()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::BOOLEAN)));
+		$query->shouldReceive('count')->andReturn(0);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('add')->andReturn(true);
+		$cache->shouldReceive('has')->andReturn(false);
+		$cache->shouldReceive('forget')->andReturn(true);
+
+		$this->beConstructedWith($query, $repository, $cache);
+
+		$this->set(self::KEY, self::BOOLEAN)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn(self::BOOLEAN);
+		$this->cacheForget(self::KEY)->shouldReturn(self::BOOLEAN);
+	}
+
+	function it_can_forget_all_cached_setting()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array(self::KEY => json_encode(self::BOOLEAN)));
+		$query->shouldReceive('count')->andReturn(0);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('get')->andReturn(false);
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('add')->andReturn(true);
+		$cache->shouldReceive('has')->andReturn(false);
+		$cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('flush')->andReturn(true);
+
+		$this->beConstructedWith($query, $repository, $cache);
+
+		$this->set(self::KEY, self::BOOLEAN)->shouldReturn(true);
+		$this->get(self::KEY)->shouldReturn(self::BOOLEAN);
+		$this->cacheClear()->shouldReturn(self::BOOLEAN);
+	}
 }

@@ -133,8 +133,7 @@ class Setting extends SettingBase implements SettableInterface {
 			->table('settings')
 			->truncate();
 
-		$this->cache
-			->flush();
+		$this->cacheClear();
 
 		return $result ? true : false;
 	}
@@ -158,4 +157,5 @@ class Setting extends SettingBase implements SettableInterface {
 
 		return $this;
 	}
+
 }

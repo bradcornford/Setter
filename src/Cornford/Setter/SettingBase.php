@@ -45,8 +45,6 @@ abstract class SettingBase {
 	 * @param Query      $database
 	 * @param Repository $config
 	 * @param Cache      $cache
-	 *
-	 * @return self
 	 */
 	public function __construct(Query $database, Repository $config, Cache $cache)
 	{
@@ -77,6 +75,35 @@ abstract class SettingBase {
 	public function cacheHas($key)
 	{
 		return $this->cache->has($this->attachTag($key)) ? true : false;
+	}
+
+
+	/**
+	 * Forget a cached setting by key
+	 *
+	 * @param string $key
+	 *
+	 * @return boolean
+	 */
+	public function cacheForget($key)
+	{
+		$this->cache
+			->forget($this->attachTag($key));
+
+		return true;
+	}
+
+	/**
+	 * Clear all cached settings
+	 *
+	 * @return boolean
+	 */
+	public function cacheClear()
+	{
+		$this->cache
+			->flush();
+
+		return true;
 	}
 
 	/**
