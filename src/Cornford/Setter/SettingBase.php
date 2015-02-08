@@ -1,5 +1,6 @@
 <?php namespace Cornford\Setter;
 
+use DateTime;
 use Illuminate\Database\DatabaseManager as Query;
 use Illuminate\Config\Repository;
 use Illuminate\Cache\Repository as Cache;
@@ -129,19 +130,16 @@ abstract class SettingBase {
 	protected function arrangeResults($results, $key = null)
 	{
 		$return = array();
+
 		foreach ($results as $path => $value) {
-			$parts = explode('.', trim(preg_replace('/^' . $key . '/', '', $path), '.'));
+			$parts = strpos($path, '.') > 0 ? explode('.', trim(preg_replace('/^' . $key . '/', '', $path), '.')) : array($path);
 			$target =& $return;
 
 			foreach ($parts as $part) {
 				$target =& $target[$part];
 			}
 
-			if ($value === '""') {
-				$value = '';
-			}
-
-			$target = @json_decode($value) ?: $value;
+			$target = $this->decodeJson($value);
 		}
 
 		return $return;
@@ -155,25 +153,19 @@ abstract class SettingBase {
 	 *
 	 * @return string|array
 	 */
-	protected function returnResults(array $results = array(), $key)
+	protected function returnResults($results = array(), $key)
 	{
-		$return = array();
+		$items = $this->arrangeResults($results, $key);
+		$return = $this->combineResults($items, $key);
 
-		if ($results) {
-			$items = $this->arrangeResults($results, $key);
-			$return = $this->combineResults($items, $key);
-		}
-
-		if (count($return) == 1) {
-			$firstResult = reset($results);
-			$return = $firstResult == '""' ? '' : $firstResult;
-			$return = @json_decode($return) ?: $return;
-		}
+        if (count($return) == 1) {
+            $return = reset($return);
+        }
 
 		$this->cache->forget($this->attachTag($key));
 		$this->cache->add($this->attachTag($key), $return, $this->expiry);
 
-		return $return;
+		return $this->decodeJson($return);
 	}
 
 	/**
@@ -235,11 +227,7 @@ abstract class SettingBase {
 	{
 		$value = $this->cache->get($this->attachTag($key));
 
-		if ($value === '""') {
-			$value = '';
-		}
-
-		return @json_decode($value === '""' ? '' : $value) ?: $value;
+		return $this->decodeJson($value);
 	}
 
 	/**
@@ -253,11 +241,40 @@ abstract class SettingBase {
 	{
 		$value = $this->config->get($key);
 
-		if ($value === '""') {
-			$value = '';
+		return $this->decodeJson($value);
+	}
+
+	/**
+	 * Is the string Json encoded.
+	 *
+	 * @param string $string
+	 * @return boolean
+	 */
+	protected function isJson($string)
+	{
+		if (!is_string($string)) {
+			return false;
 		}
 
-		return @json_decode($value) ?: $value;
+		json_decode($string);
+
+		return (json_last_error() == JSON_ERROR_NONE);
+	}
+
+	/**
+	 * Decode a Json item.
+	 *
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
+	protected function decodeJson($value)
+	{
+		if ($this->isJson($value)) {
+			return @json_decode($value === '""' ? '' : $value) ?: $value;
+		}
+
+		return $value;
 	}
 
 }
