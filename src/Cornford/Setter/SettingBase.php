@@ -158,9 +158,9 @@ abstract class SettingBase {
 		$items = $this->arrangeResults($results, $key);
 		$return = $this->combineResults($items, $key);
 
-        if (count($return) == 1) {
-            $return = reset($return);
-        }
+		if (!is_array($this->returnConfig($key)) && count($return) == 1) {
+			$return = reset($return);
+		}
 
 		$this->cache->forget($this->attachTag($key));
 		$this->cache->add($this->attachTag($key), $return, $this->expiry);
