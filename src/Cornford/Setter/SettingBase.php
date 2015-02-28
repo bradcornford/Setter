@@ -271,7 +271,7 @@ abstract class SettingBase {
 	protected function decodeJson($value)
 	{
 		if ($this->isJson($value)) {
-			return @json_decode($value === '""' ? '' : $value) ?: $value;
+			return (json_decode($value === '""' ? '' : $value) ?: $value);
 		}
 
 		return $value;
