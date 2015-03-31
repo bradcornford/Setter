@@ -158,7 +158,10 @@ abstract class SettingBase {
 		$items = $this->arrangeResults($results, $key);
 		$return = $this->combineResults($items, $key);
 
-		if (!is_array($this->returnConfig($key)) && count($return) == 1) {
+		if ((!is_array($this->returnConfig($key)) || count($this->returnConfig($key)) == 0) &&
+			(array_key_exists($key, $return) || array_key_exists('', $return))
+			&& count($return) == 1
+		) {
 			$return = reset($return);
 		}
 

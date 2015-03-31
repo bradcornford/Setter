@@ -358,6 +358,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('select')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn($query);
 		$query->shouldReceive('get')->andReturn(false);
 		$query->shouldReceive('update')->andReturn(self::STRING);
 
@@ -385,6 +386,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('from')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
+        $query->shouldReceive('lists')->andReturn($query);
 		$query->shouldReceive('delete')->andReturn(true);
 		$query->shouldReceive('get')->andReturn(false);
 		$query->shouldReceive('update')->andReturn(self::STRING);
