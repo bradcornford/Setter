@@ -7,6 +7,10 @@ use stdClass;
 class SettingSpec extends ObjectBehavior
 {
 	const KEY = 'test';
+	const SUB_KEY = 'test.item';
+	const SUB_KEY_ITEM_1 = 'test.item.value1';
+	const VALUE_1 = 'value1';
+	const VALUE_2 = 'value2';
 	const STRING = 'value';
 	const INTEGER = 1;
 	const BOOLEAN = true;
@@ -386,7 +390,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('from')->andReturn($query);
 		$query->shouldReceive('where')->andReturn($query);
 		$query->shouldReceive('whereRaw')->andReturn($query);
-        $query->shouldReceive('lists')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn($query);
 		$query->shouldReceive('delete')->andReturn(true);
 		$query->shouldReceive('get')->andReturn(false);
 		$query->shouldReceive('update')->andReturn(self::STRING);
@@ -656,5 +660,31 @@ class SettingSpec extends ObjectBehavior
 		$this->set(self::KEY, self::BOOLEAN)->shouldReturn(true);
 		$this->get(self::KEY)->shouldReturn(self::BOOLEAN);
 		$this->cacheClear()->shouldReturn(self::BOOLEAN);
+	}
+
+	function it_can_merge_a_set_setting_with_config()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array(self::SUB_KEY_ITEM_1 => json_encode(self::BOOLEAN)));
+		$query->shouldReceive('count')->andReturn(0);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('has')->andReturn(true);
+		$repository->shouldReceive('get')->andReturn(array(self::VALUE_1 => self::BOOLEAN, self::VALUE_2 => self::STRING));
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('add')->andReturn(true);
+		$cache->shouldReceive('has')->andReturn(false);
+		$cache->shouldReceive('forget')->andReturn(true);
+
+		$this->beConstructedWith($query, $repository, $cache);
+
+		$this->set(self::SUB_KEY_ITEM_1, self::BOOLEAN)->shouldReturn(true);
+		$this->get(self::SUB_KEY)->shouldReturn(array(self::VALUE_1 => true, self::VALUE_2 => self::STRING));
 	}
 }
