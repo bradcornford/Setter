@@ -18,7 +18,8 @@ class SettingServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('cornford/setter');
+		$migrationPath = __DIR__.'/../../migrations/';
+		$this->publishes([$migrationPath => database_path('/migrations')], 'setter');
 	}
 
 	/**
