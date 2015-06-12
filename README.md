@@ -22,7 +22,7 @@ Think of Setter as an easy way to integrate Settings with Laravel, providing a v
 Begin by installing this package through Composer. Edit your project's `composer.json` file to require `cornford/setter`.
 
 	"require": {
-		"cornford/setter": "1.*"
+		"cornford/setter": "2.*"
 	}
 
 Next, update Composer from the Terminal:
