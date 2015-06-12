@@ -5,7 +5,9 @@
 [![Build Status](https://travis-ci.org/bradcornford/Setter.svg?branch=master)](https://travis-ci.org/bradcornford/Setter)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bradcornford/Setter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bradcornford/Setter/?branch=master)
 
-Think of Setter as an easy way to integrate Settings with Laravel 4, providing a variety of helpers to speed up the utilisation of application wide settings. These include:
+### For Laravel 4.x, check [version 1.5.5](https://github.com/bradcornford/Setter/tree/v1.5.5)
+
+Think of Setter as an easy way to integrate Settings with Laravel, providing a variety of helpers to speed up the utilisation of application wide settings. These include:
 
 - `Setting::set`
 - `Setting::get`
