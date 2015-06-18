@@ -29,9 +29,13 @@ Next, update Composer from the Terminal:
 
 	composer update
 
+We now have to publish the packages assets with the following command:
+
+	php artisan vendor:publish --provider="Cornford\\Setter\\SettingServiceProvider"
+
 We now have to migrate the package database table with the following command:
 
-    php artisan migrate --package cornford/setter
+	php artisan migrate
 
 Once this operation completes, the next step is to add the service provider. Open `app/config/app.php`, and add a new item to the providers array.
 
