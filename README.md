@@ -37,13 +37,13 @@ We now have to migrate the package database table with the following command:
 
 	php artisan migrate
 
-Once this operation completes, the next step is to add the service provider. Open `app/config/app.php`, and add a new item to the providers array.
+Once this operation completes, the next step is to add the service provider. Open `config/app.php`, and add a new item to the providers array.
 
 	'Cornford\Setter\SettingServiceProvider',
 
-The final step is to introduce the facade. Open `app/config/app.php`, and add a new item to the aliases array.
+The final step is to introduce the facade. Open `config/app.php`, and add a new item to the aliases array.
 
-	'Setting'         => 'Cornford\Setter\Facades\Setting',
+	'Setting'         => 'Cornford\Setter\Facades\SettingFacade',
 
 That's it! You're all set to go.
 
