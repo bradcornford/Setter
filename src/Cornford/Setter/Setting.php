@@ -28,7 +28,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 			$result = $query->insert(array('key' => $key, 'value' => $value));
 		}
 
-		if ($this->isCacheEnabled()) {
+		if ($this->cacheEnabled()) {
 			$this->recacheItem($value, $key);
 		}
 
@@ -45,7 +45,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 */
 	public function get($key, $default = null)
 	{
-		if ($this->isCacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
+		if ($this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
 			return $this->returnCache($key);
 		}
 
@@ -84,7 +84,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 			->where('key', '=', $key)
 			->delete();
 
-		if ($this->isCacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
+		if ($this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
 			$this->cache
 				->forget($this->attachCacheTag($key));
 		}
@@ -101,7 +101,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 */
 	public function has($key)
 	{
-		if ($this->isCacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
+		if ($this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
 			$result = true;
 		} else {
 			$result = $this->database
@@ -139,7 +139,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 			->table('settings')
 			->truncate();
 
-		if ($this->isCacheEnabled()) {
+		if ($this->cacheEnabled()) {
 			$this->cacheClear();			
 		}
 
@@ -163,11 +163,11 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	}
 
 	/**
-	 * Is caching enabled?
+	 * Cache enabled?
 	 *
 	 * @return boolean
 	 */
-	public function isCacheEnabled()
+	public function cacheEnabled()
 	{
 		return ($this->getCacheEnabled() === true);
 	}
@@ -177,7 +177,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 *
 	 * @return void
 	 */
-	public function enableCaching()
+	public function enableCache()
 	{
 		$this->setCacheEnabled(true);
 	}
@@ -187,7 +187,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 *
 	 * @return void
 	 */
-	public function disableCaching()
+	public function disableCache()
 	{
 		$this->setCacheEnabled(false);
 	}

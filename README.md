@@ -47,6 +47,14 @@ The final step is to introduce the facade. Open `config/app.php`, and add a new 
 
 That's it! You're all set to go.
 
+## Configuration
+
+You can now configure Setter in a few simple steps. Open `app/config/packages/cornford/setter/config.php` and update the options as needed.
+
+- `cache` - Enable caching to improve performance by reducing database calls.
+- `tag` - A tag prefixed to all cache items, e.g. tag::.
+- `expiry` - The default expiry for cache items, e.g. 60.
+
 ## Usage
 
 It's really as simple as using the Setter class in any Controller / Model / File you see fit with:
@@ -61,7 +69,16 @@ This will give you access to
 - [Has](#has)
 - [All](#all)
 - [Clear](#clear)
-- [Expires](#expires)
+- [expires](#expires)
+- [cacheEnabled](#cache-enabled)
+- [enableCache](#enable-cache)
+- [disableCache](#disable-cache)
+- [setCacheTag](#set-cache-tag)
+- [getCacheTag](#get-cache-tag)
+- [cacheHas](#cache-has)
+- [cacheForget](#cache-forget)
+- [cacheClear](#cache-clear)
+- [CacheExpires](#cache-expires)
 
 ### Set
 
@@ -72,20 +89,20 @@ The `set` method sets a setting via both a key and a value parameter in the data
 ### Get
 
 The `get` method gets a setting via a key parameter from the database, and a default value can be optionally passed if the setting doesn't exist.
-If no default parameter is supplied, and an application configration variable is present, this will be returned.
+If no default parameter is supplied, and an application configuration variable is present, this will be returned.
 
 	Setting::get('app.url', 'http://localhost');
 	Setting::get('app.url');
 
 ### Forget
 
-The `forget` method removes a setting via a key paramter from the database.
+The `forget` method removes a setting via a key parameter from the database.
 
 	Setting::forget('app.setting');
 
 ### Has
 
-The `has` method returns a true / false based on if a setting is present in the database via a key paramter.
+The `has` method returns a true / false based on if a setting is present in the database via a key parameter.
 This doesn't fall back to checking application configuration variables.
 
 	Setting::has('app.setting');
@@ -110,6 +127,63 @@ The `expires` sets the cache expiry setting.
 Can be false to not cache, true / 0 to cache indefinitely, an integer for minutes, or a datetime of when to expire.
 
 	Setting::expires(false);
+
+### Cache Enabled
+
+The `cacheEnabled` get the current caching state returning a true / false based on the cache status.
+
+	Setting::cacheEnabled();
+
+### Enable Cache
+
+The `enableCache` sets caching state to cache items.
+
+	Setting::enableCache();
+
+### Disable Cache
+
+The `disableCache` sets caching state to not cache items.
+
+	Setting::disableCache();
+
+### Set Cache Tag
+
+The `setCacheTag` sets the currently caching prefix tag.
+
+	Setting::setCacheTag('tag:');
+
+### Get Cache Tag
+
+The `getCacheTag` gets the currently set caching prefix tag.
+
+	Setting::getCacheTag();
+
+### Cache Has
+
+The `cacheHas` method returns a true / false based on if a setting is present in the cache via a key parameter.
+This doesn't fall back to checking application configuration variables.
+
+	Setting::cacheHas('app.setting');
+
+### Cache Forget
+
+The `cacheForget` method removes a setting via a key parameter from the cache.
+
+	Setting::cacheForget('app.setting');
+
+### Cache Expires
+
+The `cacheExpires` sets the cache expiry setting.
+Can be false to not cache, true / 0 to cache indefinitely, an integer for minutes, or a datetime of when to expire.
+
+	Setting::cacheExpires(false);
+
+### Cache Clear
+
+The `cacheClear` removes all settings from the cache.
+This doesn't fall back to removing application configuration variables.
+
+	Setting::cacheClear();
 
 ### License
 

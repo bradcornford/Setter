@@ -5,25 +5,25 @@ use Cornford\Setter\Exceptions\SettingArgumentException;
 interface CacheableInterface {
 
 	/**
-	 * Is caching enabled?
+	 * Cache enabled?
 	 *
 	 * @return boolean
 	 */
-	public function isCacheEnabled();
+	public function cacheEnabled();
 
 	/**
 	 * Enable caching.
 	 *
 	 * @return void
 	 */
-	public function enableCaching();
+	public function enableCache();
 
 	/**
 	 * Disable caching.
 	 *
 	 * @return void
 	 */
-	public function disableCaching();
+	public function disableCache();
 
 	/**
 	 * Set the cache tag

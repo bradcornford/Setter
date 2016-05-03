@@ -284,7 +284,7 @@ abstract class SettingBase {
 			$return = reset($return);
 		}
 
-		if ($this->isCacheEnabled()) {
+		if ($this->cacheEnabled()) {
 			$this->cache->forget($this->attachCacheTag($key));
 			$this->cache->add($this->attachCacheTag($key), $return, $this->getCacheExpiry());
 		}
