@@ -18,8 +18,13 @@ class SettingServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$migrationPath = __DIR__.'/../../migrations/';
-		$this->publishes([$migrationPath => database_path('/migrations')], 'setter');
+		$this->publishes(
+			[
+				__DIR__ . '/../../config/config.php' => config_path('setter.php'),
+				__DIR__ . '/../../migrations/' => database_path('/migrations')
+			],
+			'setter'
+		);
 	}
 
 	/**
@@ -29,12 +34,16 @@ class SettingServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app['setting'] = $this->app->share(function()
+		$configPath = __DIR__ . '/../../config/config.php';
+		$this->mergeConfigFrom($configPath, 'googlmapper');
+
+		$this->app['setting'] = $this->app->share(function($app)
 		{
 			return new Setting(
 				$this->app->make('Illuminate\Database\DatabaseManager'),
 				$this->app->make('Illuminate\Config\Repository'),
-				$this->app->make('Illuminate\Cache\Repository')
+				$this->app->make('Illuminate\Cache\Repository'),
+				$app['config']->get('googlmapper')
 			);
 		});
 	}

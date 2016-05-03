@@ -1,0 +1,82 @@
+<?php namespace Cornford\Setter\Contracts;
+
+use Cornford\Setter\Exceptions\SettingArgumentException;
+
+interface CacheableInterface {
+
+	/**
+	 * Is caching enabled?
+	 *
+	 * @return boolean
+	 */
+	public function isCacheEnabled();
+
+	/**
+	 * Enable caching.
+	 *
+	 * @return void
+	 */
+	public function enableCaching();
+
+	/**
+	 * Disable caching.
+	 *
+	 * @return void
+	 */
+	public function disableCaching();
+
+	/**
+	 * Set the cache tag
+	 *
+	 * @param string $value
+	 *
+	 * @throws SettingArgumentException
+	 *
+	 * @return void
+	 */
+	public function setCacheTag($value);
+
+	/**
+	 * Get the cache tag
+	 *
+	 * @return string
+	 */
+	public function getCacheTag();
+
+	/**
+	 * Check a setting exists in cache
+	 *
+	 * @param string $key
+	 *
+	 * @return boolean
+	 */
+	public function cacheHas($key);
+
+	/**
+	 * Forget a cached setting by key
+	 *
+	 * @param string $key
+	 *
+	 * @return boolean
+	 */
+	public function cacheForget($key);
+
+	/**
+	 * Clear all cached settings
+	 *
+	 * @return boolean
+	 */
+	public function cacheClear();
+
+	/**
+	 * Set the cache expiry
+	 *
+	 * @param boolean|integer|Datetime $expiry
+	 *
+	 * @throws SettingArgumentException
+	 *
+	 * @return self
+	 */
+	public function cacheExpires($expiry);
+
+}

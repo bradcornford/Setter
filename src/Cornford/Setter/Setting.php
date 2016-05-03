@@ -1,9 +1,11 @@
 <?php namespace Cornford\Setter;
 
+use Cornford\Setter\Contracts\CacheableInterface;
 use Cornford\Setter\Contracts\SettableInterface;
-use Cornford\Setter\Exceptions\SettingVariableException;
+use Cornford\Setter\Exceptions\SettingArgumentException;
+use DateTime;
 
-class Setting extends SettingBase implements SettableInterface {
+class Setting extends SettingBase implements SettableInterface, CacheableInterface {
 
 	/**
 	 * Set a setting by key and value
@@ -26,7 +28,9 @@ class Setting extends SettingBase implements SettableInterface {
 			$result = $query->insert(array('key' => $key, 'value' => $value));
 		}
 
-		$this->recacheItem($value, $key);
+		if ($this->isCacheEnabled()) {
+			$this->recacheItem($value, $key);
+		}
 
 		return $result ? true : false;
 	}
@@ -41,7 +45,7 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function get($key, $default = null)
 	{
-		if ($this->cacheHas($key)) {
+		if ($this->isCacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
 			return $this->returnCache($key);
 		}
 
@@ -80,8 +84,10 @@ class Setting extends SettingBase implements SettableInterface {
 			->where('key', '=', $key)
 			->delete();
 
-		$this->cache
-			->forget($this->attachTag($key));
+		if ($this->isCacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
+			$this->cache
+				->forget($this->attachCacheTag($key));
+		}
 
 		return $result ? true : false;
 	}
@@ -95,7 +101,7 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function has($key)
 	{
-		if ($this->cacheHas($this->attachTag($key))) {
+		if ($this->isCacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
 			$result = true;
 		} else {
 			$result = $this->database
@@ -105,7 +111,7 @@ class Setting extends SettingBase implements SettableInterface {
 				->count();
 		}
 
-		return $result ? true : false;
+		return ($result ? true : false);
 	}
 
 	/**
@@ -133,27 +139,75 @@ class Setting extends SettingBase implements SettableInterface {
 			->table('settings')
 			->truncate();
 
-		$this->cacheClear();
+		if ($this->isCacheEnabled()) {
+			$this->cacheClear();			
+		}
 
 		return $result ? true : false;
 	}
 
 	/**
-	 * Set the cache expiry
+	 * Set the expiry
 	 *
-	 * @param boolean|integer|datetime $expiry
+	 * @param boolean|integer|Datetime $expiry
 	 *
-	 * @throws SettingVariableException
+	 * @throws SettingArgumentException
 	 *
 	 * @return self
 	 */
 	public function expires($expiry)
 	{
-		if (!is_bool($expiry) && !is_integer($expiry) && !$expiry instanceof \DateTime) {
-			throw new SettingVariableException('Invalid expiry value.');
+		$this->cacheExpires($expiry);
+
+		return $this;
+	}
+
+	/**
+	 * Is caching enabled?
+	 *
+	 * @return boolean
+	 */
+	public function isCacheEnabled()
+	{
+		return ($this->getCacheEnabled() === true);
+	}
+
+	/**
+	 * Enable caching.
+	 *
+	 * @return void
+	 */
+	public function enableCaching()
+	{
+		$this->setCacheEnabled(true);
+	}
+
+	/**
+	 * Disable caching.
+	 *
+	 * @return void
+	 */
+	public function disableCaching()
+	{
+		$this->setCacheEnabled(false);
+	}
+
+	/**
+	 * Set the cache expiry
+	 *
+	 * @param boolean|integer|Datetime $expiry
+	 *
+	 * @throws SettingArgumentException
+	 *
+	 * @return self
+	 */
+	public function cacheExpires($expiry)
+	{
+		if (!is_bool($expiry) && !is_integer($expiry) && !$expiry instanceof DateTime) {
+			throw new SettingArgumentException('Expiry is required in boolean, integer or DateTime format.');
 		}
 
-		$this->expiry = $expiry;
+		$this->cacheExpiry = $expiry;
 
 		return $this;
 	}
