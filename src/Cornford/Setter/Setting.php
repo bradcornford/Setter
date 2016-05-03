@@ -175,21 +175,25 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	/**
 	 * Enable caching.
 	 *
-	 * @return void
+	 * @return self
 	 */
 	public function enableCache()
 	{
 		$this->setCacheEnabled(true);
+
+		return $this;
 	}
 
 	/**
 	 * Disable caching.
 	 *
-	 * @return void
+	 * @return self
 	 */
 	public function disableCache()
 	{
 		$this->setCacheEnabled(false);
+
+		return $this;
 	}
 
 	/**

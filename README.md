@@ -130,13 +130,13 @@ Can be false to not cache, true / 0 to cache indefinitely, an integer for minute
 
 ### Cache Enabled
 
-The `cacheEnabled` get the current caching state returning a true / false based on the cache status.
+The `cacheEnabled` get the current caching state returning a true / false based on the cache status, retuning the current Setter instance.
 
 	Setting::cacheEnabled();
 
 ### Enable Cache
 
-The `enableCache` sets caching state to cache items.
+The `enableCache` sets caching state to cache items, retuning the current Setter instance.
 
 	Setting::enableCache();
 
