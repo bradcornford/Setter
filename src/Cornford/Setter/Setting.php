@@ -45,7 +45,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 */
 	public function get($key, $default = null)
 	{
-		if ($this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
+		if (!$this->getUncached() && $this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
 			return $this->returnCache($key);
 		}
 
@@ -55,10 +55,12 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 			->whereRaw('settings.key LIKE "' . $key . '.%"', array(), 'or')
 			->lists('value', 'key');
 
+		$this->setUncached(false);
+
 		if ($results) {
 			return $this->returnResults($results, $key);
 		}
-
+		
 		if ($default) {
 			return $default;
 		}
@@ -182,6 +184,18 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	public function disableCache()
 	{
 		$this->setCacheEnabled(false);
+
+		return $this;
+	}
+
+	/**
+	 * Sets the uncached flag to request an item from the DB and re-cache the item.
+	 *
+	 * @return self
+	 */
+	public function uncached()
+	{
+		$this->setUncached(true);
 
 		return $this;
 	}

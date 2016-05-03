@@ -1123,4 +1123,31 @@ class SettingSpec extends ObjectBehavior
 		$this->set(self::SUB_KEY_ITEM_1, self::BOOLEAN)->shouldReturn(true);
 		$this->get(self::SUB_KEY)->shouldReturn(array(self::VALUE_1 => true));
 	}
+
+	function it_set_and_get_an_uncached_item()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('insert')->andReturn(true);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('lists')->andReturn(array(self::SUB_KEY_ITEM_1 => json_encode(self::BOOLEAN)));
+		$query->shouldReceive('count')->andReturn(0);
+		$query->shouldReceive('update')->andReturn(true);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+		$repository->shouldReceive('has')->andReturn(false);
+		$repository->shouldReceive('get')->andReturn(false);
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('has')->andReturn(true);
+		$cache->shouldReceive('forget')->andReturn(true);
+		$cache->shouldReceive('add')->andReturn(true);
+
+		$this->beConstructedWith($query, $repository, $cache, ['cache' => true, 'tag' => self::TAG, 'expiry' => true]);
+
+		$this->set(self::SUB_KEY_ITEM_1, self::BOOLEAN)->shouldReturn(true);
+		$this->uncached()->get(self::SUB_KEY)->shouldReturn(array(self::VALUE_1 => true));
+	}
 }

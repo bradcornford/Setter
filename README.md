@@ -70,6 +70,7 @@ This will give you access to
 - [All](#all)
 - [Clear](#clear)
 - [expires](#expires)
+- [Uncached](#uncached)
 - [cacheEnabled](#cache-enabled)
 - [enableCache](#enable-cache)
 - [disableCache](#disable-cache)
@@ -116,45 +117,54 @@ This doesn't fall back to return application configuration variables.
 
 ### Clear
 
-The `clear` removes all settings from the database.
+The `clear` method removes all settings from the database.
 This doesn't fall back to removing application configuration variables.
 
 	Setting::clear();
 
 ### Expires
 
-The `expires` sets the cache expiry setting.
+The `expires` method sets the cache expiry setting.
 Can be false to not cache, true / 0 to cache indefinitely, an integer for minutes, or a datetime of when to expire.
 
 	Setting::expires(false);
 
+### Uncached
+
+The `uncached` method ensures the next get request is requested from the database rather than the cache. It will also re-cache the item if one is found.
+
+	Setting::uncached();
+	Setting::uncached()->get('app.setting');
+
 ### Cache Enabled
 
-The `cacheEnabled` get the current caching state returning a true / false based on the cache status, retuning the current Setter instance.
+The `cacheEnabled` method gets the current caching state returning a true / false based on the cache status, retuning the current Setter instance.
 
 	Setting::cacheEnabled();
 
 ### Enable Cache
 
-The `enableCache` sets caching state to cache items, retuning the current Setter instance.
+The `enableCache` method sets caching state to cache items, retuning the current Setter instance.
 
 	Setting::enableCache();
+	Setting::enableCache()->set('app.url', 'http://localhost');
 
 ### Disable Cache
 
-The `disableCache` sets caching state to not cache items.
+The `disableCache` method sets caching state to not cache items.
 
 	Setting::disableCache();
+	Setting::disableCache()->set('app.url', 'http://localhost');
 
 ### Set Cache Tag
 
-The `setCacheTag` sets the currently caching prefix tag.
+The `setCacheTag` method sets the currently caching prefix tag.
 
 	Setting::setCacheTag('tag:');
 
 ### Get Cache Tag
 
-The `getCacheTag` gets the currently set caching prefix tag.
+The `getCacheTag` method gets the currently set caching prefix tag.
 
 	Setting::getCacheTag();
 
@@ -173,14 +183,14 @@ The `cacheForget` method removes a setting via a key parameter from the cache.
 
 ### Cache Expires
 
-The `cacheExpires` sets the cache expiry setting.
+The `cacheExpires` method sets the cache expiry setting.
 Can be false to not cache, true / 0 to cache indefinitely, an integer for minutes, or a datetime of when to expire.
 
 	Setting::cacheExpires(false);
 
 ### Cache Clear
 
-The `cacheClear` removes all settings from the cache.
+The `cacheClear` method removes all settings from the cache.
 This doesn't fall back to removing application configuration variables.
 
 	Setting::cacheClear();

@@ -44,6 +44,13 @@ interface CacheableInterface {
 	public function getCacheTag();
 
 	/**
+	 * Sets the uncached flag to request an item from the DB and re-cache the item if caching is enabled.
+	 *
+	 * @return self
+	 */
+	public function uncached();
+
+	/**
 	 * Check a setting exists in cache
 	 *
 	 * @param string $key

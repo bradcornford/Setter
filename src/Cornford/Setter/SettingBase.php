@@ -58,6 +58,13 @@ abstract class SettingBase {
 	protected $cacheExpiry;
 
 	/**
+	 * Un-cached?
+	 *
+	 * @var boolean
+	 */
+	protected $uncached = false;
+
+	/**
 	 * Construct Setter
 	 *
 	 * @param Query      $database
@@ -125,7 +132,7 @@ abstract class SettingBase {
 	 */
 	public function cacheEnabled()
 	{
-		return ($this->getCacheEnabled() === true);
+		return ($this->getCacheEnabled() === self::CACHE_ENABLED);
 	}
 
 	/**
@@ -182,6 +189,28 @@ abstract class SettingBase {
 	protected function getCacheExpiry()
 	{
 		return $this->cacheExpiry;
+	}
+
+	/**
+	 * Set the uncached status.
+	 *
+	 * @param boolean $value
+	 *
+	 * @return void
+	 */
+	protected function setUncached($value)
+	{
+		$this->uncached = $value;
+	}
+
+	/**
+	 * Get the uncached status.
+	 *
+	 * @return boolean
+	 */
+	protected function getUncached()
+	{
+		return $this->uncached;
 	}
 
 	/**
