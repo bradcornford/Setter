@@ -14,14 +14,14 @@ interface CacheableInterface {
 	/**
 	 * Enable caching.
 	 *
-	 * @return void
+	 * @return self
 	 */
 	public function enableCache();
 
 	/**
 	 * Disable caching.
 	 *
-	 * @return void
+	 * @return self
 	 */
 	public function disableCache();
 

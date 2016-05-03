@@ -119,6 +119,16 @@ abstract class SettingBase {
 	}
 
 	/**
+	 * Cache enabled?
+	 *
+	 * @return boolean
+	 */
+	public function cacheEnabled()
+	{
+		return ($this->getCacheEnabled() === true);
+	}
+
+	/**
 	 * Set the cache tag
 	 *
 	 * @param string $value
