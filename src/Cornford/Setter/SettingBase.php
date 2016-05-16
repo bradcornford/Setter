@@ -344,7 +344,7 @@ abstract class SettingBase {
 		$config = $this->returnConfig($key);
 
 		if (is_array($config)) {
-			return array_replace_recursive($config, $results);
+			return array_replace_recursive($config, ((array_key_exists($key, $results) || array_key_exists('', $results)) ? reset($results) : $results));
 		}
 
 		return $results;
