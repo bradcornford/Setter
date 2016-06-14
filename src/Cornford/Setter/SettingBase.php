@@ -1,5 +1,6 @@
 <?php namespace Cornford\Setter;
 
+use Cornford\Setter\Exceptions\SettingArgumentException;
 use DateTime;
 use Illuminate\Database\DatabaseManager as Query;
 use Illuminate\Config\Repository;
@@ -10,14 +11,16 @@ abstract class SettingBase {
 	const LOCATION_DATABASE = 'database';
 	const LOCATION_CACHE = 'cache';
 
+	const CACHE_ENABLED = true;
 	const CACHE_TAG = 'setter::';
+	const CACHE_EXPIRY = true;
 
 	/**
 	 * Database
 	 *
 	 * @var \Illuminate\Database\DatabaseManager
 	 */
-	protected $database;
+	protected $databaseInstance;
 
 	/**
 	 * Config
@@ -34,11 +37,32 @@ abstract class SettingBase {
 	protected $cache;
 
 	/**
+	 * Caching Enabled?
+	 *
+	 * @var boolean
+	 */
+	protected $cacheEnabled = true;
+
+	/**
+	 * Cache Tag
+	 *
+	 * @var string
+	 */
+	protected $cacheTag;
+
+	/**
 	 * Cache
 	 *
 	 * @var integer|datetime|boolean
 	 */
-	protected $expiry = true;
+	protected $cacheExpiry;
+
+	/**
+	 * Un-cached?
+	 *
+	 * @var boolean
+	 */
+	protected $uncached = false;
 
 	/**
 	 * Construct Setter
@@ -46,12 +70,147 @@ abstract class SettingBase {
 	 * @param Query      $database
 	 * @param Repository $config
 	 * @param Cache      $cache
+	 * @param array      $options
+	 *
+	 * @throws SettingArgumentException
 	 */
-	public function __construct(Query $database, Repository $config, Cache $cache)
+	public function __construct(Query $database, Repository $config, Cache $cache, array $options = [])
 	{
 		$this->database = $database;
 		$this->config = $config;
 		$this->cache = $cache;
+
+		if (!isset($options['cache'])) {
+			throw new SettingArgumentException('Cache is required in boolean format.');
+		}
+		
+		if (!isset($options['tag'])) {
+			throw new SettingArgumentException('Tag is required in string format.');
+		}
+
+		if (!isset($options['expiry'])) {
+			throw new SettingArgumentException('Expiry is required in boolean, integer or DateTime format.');
+		}
+
+		$this->setCacheEnabled(isset($options['cache']) ? $options['cache'] : self::CACHE_ENABLED);
+		$this->setCacheTag(isset($options['tag']) ? $options['tag'] : self::CACHE_TAG);
+		$this->setCacheExpiry(isset($options['expiry']) ? $options['expiry'] : self::CACHE_EXPIRY);
+	}
+
+	/**
+	 * Set caching enabled status.
+	 *
+	 * @param boolean $value
+	 *
+	 * @throws SettingArgumentException
+	 *
+	 * @return void
+	 */
+	protected function setCacheEnabled($value)
+	{
+		if (!is_bool($value)) {
+			throw new SettingArgumentException('Cache enabled is required in boolean format.');
+		}
+
+		$this->cacheEnabled = $value;
+	}
+
+	/**
+	 * Get the caching enabled status.
+	 *
+	 * @return boolean
+	 */
+	protected function getCacheEnabled()
+	{
+		return $this->cacheEnabled;
+	}
+
+	/**
+	 * Cache enabled?
+	 *
+	 * @return boolean
+	 */
+	public function cacheEnabled()
+	{
+		return ($this->getCacheEnabled() === self::CACHE_ENABLED);
+	}
+
+	/**
+	 * Set the cache tag
+	 *
+	 * @param string $value
+	 *
+	 * @throws SettingArgumentException
+	 *
+	 * @return void
+	 */
+	public function setCacheTag($value)
+	{
+		if (!is_string($value)) {
+			throw new SettingArgumentException('Cache tag is required in string format.');
+		}
+
+		$this->cacheTag = $value;
+	}
+
+	/**
+	 * Get the cache tag
+	 *
+	 * @return string
+	 */
+	public function getCacheTag()
+	{
+		return $this->cacheTag;
+	}
+
+	/**
+	 * Set the cache expiry
+	 *
+	 * @param boolean|integer|DateTime $value
+	 *
+	 * @throws SettingArgumentException
+	 *
+	 * @return void
+	 */
+	protected function setCacheExpiry($value)
+	{
+		if (!is_bool($value) && !is_integer($value) && !$value instanceof DateTime) {
+			throw new SettingArgumentException('Expiry is required in boolean, integer or DateTime format.');
+		}
+
+		$this->cacheExpiry = $value;
+	}
+
+	/**
+	 * Get the cache tag
+	 *
+	 * @return string
+	 */
+	protected function getCacheExpiry()
+	{
+		return $this->cacheExpiry;
+	}
+
+	/**
+	 * Set the uncached status.
+	 *
+	 * @param boolean $value
+	 *
+	 * @return void
+	 */
+	protected function setUncached($value)
+	{
+		$this->uncached = $value;
+	}
+
+	/**
+	 * Get the uncached status.
+	 *
+	 * @return boolean
+	 */
+	protected function getUncached()
+	{
+		return $this->uncached;
 	}
 
 	/**
@@ -61,9 +220,9 @@ abstract class SettingBase {
 	 *
 	 * @return string
 	 */
-	protected function attachTag($key)
+	protected function attachCacheTag($key)
 	{
-		return self::CACHE_TAG . $key;
+		return $this->getCacheTag() . $key;
 	}
 
 	/**
@@ -75,9 +234,8 @@ abstract class SettingBase {
 	 */
 	public function cacheHas($key)
 	{
-		return $this->cache->has($this->attachTag($key)) ? true : false;
+		return $this->cache->has($this->attachCacheTag($key)) ? true : false;
 	}
-
 
 	/**
 	 * Forget a cached setting by key
@@ -89,7 +247,7 @@ abstract class SettingBase {
 	public function cacheForget($key)
 	{
 		$this->cache
-			->forget($this->attachTag($key));
+			->forget($this->attachCacheTag($key));
 
 		return true;
 	}
@@ -165,8 +323,10 @@ abstract class SettingBase {
 			$return = reset($return);
 		}
 
-		$this->cache->forget($this->attachTag($key));
-		$this->cache->add($this->attachTag($key), $return, $this->expiry);
+		if ($this->cacheEnabled()) {
+			$this->cache->forget($this->attachCacheTag($key));
+			$this->cache->add($this->attachCacheTag($key), $return, $this->getCacheExpiry());
+		}
 
 		return $this->decodeJson($return);
 	}
@@ -210,13 +370,13 @@ abstract class SettingBase {
 			}
 
 			$this->cache
-				->forget($this->attachTag(rtrim(substr_replace($key, '', $position), '.')));
+				->forget($this->attachCacheTag(rtrim(substr_replace($key, '', $position), '.')));
 		}
 
 		$this->cache
-			->forget($this->attachTag($key));
+			->forget($this->attachCacheTag($key));
 		$this->cache
-			->add($this->attachTag($key), $value, $this->expiry);
+			->add($this->attachCacheTag($key), $value, $this->getCacheExpiry());
 	}
 
 	/**
@@ -228,7 +388,7 @@ abstract class SettingBase {
 	 */
 	protected function returnCache($key)
 	{
-		$value = $this->cache->get($this->attachTag($key));
+		$value = $this->cache->get($this->attachCacheTag($key));
 
 		return $this->decodeJson($value);
 	}

@@ -1,9 +1,11 @@
 <?php namespace Cornford\Setter;
 
+use Cornford\Setter\Contracts\CacheableInterface;
 use Cornford\Setter\Contracts\SettableInterface;
-use Cornford\Setter\Exceptions\SettingVariableException;
+use Cornford\Setter\Exceptions\SettingArgumentException;
+use DateTime;
 
-class Setting extends SettingBase implements SettableInterface {
+class Setting extends SettingBase implements SettableInterface, CacheableInterface {
 
 	/**
 	 * Set a setting by key and value
@@ -26,7 +28,9 @@ class Setting extends SettingBase implements SettableInterface {
 			$result = $query->insert(array('key' => $key, 'value' => $value));
 		}
 
-		$this->recacheItem($value, $key);
+		if ($this->cacheEnabled()) {
+			$this->recacheItem($value, $key);
+		}
 
 		return $result ? true : false;
 	}
@@ -41,7 +45,7 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function get($key, $default = null)
 	{
-		if ($this->cacheHas($key)) {
+		if (!$this->getUncached() && $this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
 			return $this->returnCache($key);
 		}
 
@@ -51,10 +55,12 @@ class Setting extends SettingBase implements SettableInterface {
 			->whereRaw('settings.key LIKE "' . $key . '.%"', array(), 'or')
 			->lists('value', 'key');
 
+		$this->setUncached(false);
+
 		if ($results) {
 			return $this->returnResults($results, $key);
 		}
-
+		
 		if ($default) {
 			return $default;
 		}
@@ -80,8 +86,10 @@ class Setting extends SettingBase implements SettableInterface {
 			->where('key', '=', $key)
 			->delete();
 
-		$this->cache
-			->forget($this->attachTag($key));
+		if ($this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
+			$this->cache
+				->forget($this->attachCacheTag($key));
+		}
 
 		return $result ? true : false;
 	}
@@ -95,7 +103,7 @@ class Setting extends SettingBase implements SettableInterface {
 	 */
 	public function has($key)
 	{
-		if ($this->cacheHas($this->attachTag($key))) {
+		if ($this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
 			$result = true;
 		} else {
 			$result = $this->database
@@ -105,7 +113,7 @@ class Setting extends SettingBase implements SettableInterface {
 				->count();
 		}
 
-		return $result ? true : false;
+		return ($result ? true : false);
 	}
 
 	/**
@@ -133,27 +141,81 @@ class Setting extends SettingBase implements SettableInterface {
 			->table('settings')
 			->truncate();
 
-		$this->cacheClear();
+		if ($this->cacheEnabled()) {
+			$this->cacheClear();			
+		}
 
 		return $result ? true : false;
 	}
 
 	/**
-	 * Set the cache expiry
+	 * Set the expiry
 	 *
-	 * @param boolean|integer|datetime $expiry
+	 * @param boolean|integer|Datetime $expiry
 	 *
-	 * @throws SettingVariableException
+	 * @throws SettingArgumentException
 	 *
 	 * @return self
 	 */
 	public function expires($expiry)
 	{
-		if (!is_bool($expiry) && !is_integer($expiry) && !$expiry instanceof \DateTime) {
-			throw new SettingVariableException('Invalid expiry value.');
+		$this->cacheExpires($expiry);
+
+		return $this;
+	}
+
+	/**
+	 * Enable caching.
+	 *
+	 * @return self
+	 */
+	public function enableCache()
+	{
+		$this->setCacheEnabled(true);
+
+		return $this;
+	}
+
+	/**
+	 * Disable caching.
+	 *
+	 * @return self
+	 */
+	public function disableCache()
+	{
+		$this->setCacheEnabled(false);
+
+		return $this;
+	}
+
+	/**
+	 * Sets the uncached flag to request an item from the DB and re-cache the item.
+	 *
+	 * @return self
+	 */
+	public function uncached()
+	{
+		$this->setUncached(true);
+
+		return $this;
+	}
+
+	/**
+	 * Set the cache expiry
+	 *
+	 * @param boolean|integer|Datetime $expiry
+	 *
+	 * @throws SettingArgumentException
+	 *
+	 * @return self
+	 */
+	public function cacheExpires($expiry)
+	{
+		if (!is_bool($expiry) && !is_integer($expiry) && !$expiry instanceof DateTime) {
+			throw new SettingArgumentException('Expiry is required in boolean, integer or DateTime format.');
 		}
 
-		$this->expiry = $expiry;
+		$this->cacheExpiry = $expiry;
 
 		return $this;
 	}

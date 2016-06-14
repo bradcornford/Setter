@@ -1,6 +1,6 @@
 <?php namespace Cornford\Setter\Exceptions;
 
-class SettingVariableException extends \Exception
+class SettingArgumentException extends \Exception
 {
 }
   

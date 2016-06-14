@@ -1,5 +1,8 @@
 <?php namespace Cornford\Setter\Contracts;
 
+use Cornford\Setter\Exceptions\SettingArgumentException;
+use DateTime;
+
 interface SettableInterface {
 
 	/**
@@ -55,11 +58,11 @@ interface SettableInterface {
 	public function clear();
 
 	/**
-	 * Set the cache expiry
+	 * Set the expiry
 	 *
-	 * @param boolean|integer|datetime $expiry
+	 * @param boolean|integer|Datetime $expiry
 	 *
-	 * @throws SettingVariableException
+	 * @throws SettingArgumentException
 	 *
 	 * @return self
 	 */
