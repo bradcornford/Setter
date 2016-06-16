@@ -170,6 +170,24 @@ class SettingSpec extends ObjectBehavior
 		$this->set(self::KEY, self::STRING)->shouldReturn(true);
 	}
 
+	function it_can_set_an_already_set_setting_with_no_update()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('count')->andReturn(1);
+		$query->shouldReceive('update')->andReturn(0);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+
+		$this->beConstructedWith($query, $repository, $cache, ['cache' => false, 'tag' => self::TAG, 'expiry' => true]);
+
+		$this->set(self::KEY, self::STRING)->shouldReturn(true);
+	}
+
 	function it_can_set_an_already_set_setting_with_caching()
 	{
 		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
