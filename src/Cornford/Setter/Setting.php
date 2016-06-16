@@ -22,6 +22,7 @@ class Setting extends SettingBase implements SettableInterface {
 		if ($this->has($key)) {
 			$result = $query->where('key', $key)
 				->update(array('value' => $value));
+			$result = ($result == 0 ? true : $result);
 		} else {
 			$result = $query->insert(array('key' => $key, 'value' => $value));
 		}
