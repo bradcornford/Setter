@@ -24,6 +24,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 		if ($this->has($key)) {
 			$result = $query->where('key', $key)
 				->update(array('value' => $value));
+			$result = ($result == 0 ? true : $result);
 		} else {
 			$result = $query->insert(array('key' => $key, 'value' => $value));
 		}
@@ -61,7 +62,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 			return $this->returnResults($results, $key);
 		}
 		
-		if ($default) {
+		if ($default !== null) {
 			return $default;
 		}
 
