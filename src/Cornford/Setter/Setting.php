@@ -62,7 +62,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 			return $this->returnResults($results, $key);
 		}
 		
-		if ($default) {
+		if ($default !== null) {
 			return $default;
 		}
 
