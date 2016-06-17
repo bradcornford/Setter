@@ -128,6 +128,66 @@ class SettingSpec extends ObjectBehavior
 		$repository = Mockery::mock('Illuminate\Config\Repository');
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
+
+		$this->beConstructedWith($query, $repository, $cache);
+		$cache->shouldReceive('has')->andReturn(false);
+
+		$this->get(self::KEY, self::STRING)->shouldReturn(self::STRING);
+	}
+
+	function it_can_get_a_setting_with_a_default_value_of_false()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('lists')->andReturn(false);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+
+		$this->beConstructedWith($query, $repository, $cache);
+		$cache->shouldReceive('has')->andReturn(false);
+
+		$this->get(self::KEY, false)->shouldReturn(false);
+	}
+
+	function it_can_get_a_setting_with_a_default_value_of_an_empty_array()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('lists')->andReturn(false);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
+		$cache->shouldReceive('has')->andReturn(false);
+
+		$this->beConstructedWith($query, $repository, $cache);
+
+		$this->get(self::KEY, [])->shouldReturn([]);
+	}
+
+	function it_can_get_a_setting_with_a_default_value_with_caching()
+	{
+		$query = Mockery::mock('Illuminate\Database\DatabaseManager');
+		$query->shouldReceive('table')->andReturn($query);
+		$query->shouldReceive('select')->andReturn($query);
+		$query->shouldReceive('where')->andReturn($query);
+		$query->shouldReceive('whereRaw')->andReturn($query);
+		$query->shouldReceive('get')->andReturn(false);
+		$query->shouldReceive('lists')->andReturn(false);
+
+		$repository = Mockery::mock('Illuminate\Config\Repository');
+
+		$cache = Mockery::mock('Illuminate\Cache\Repository');
 		$cache->shouldReceive('add')->andReturn(true);
 		$cache->shouldReceive('has')->andReturn(false);
 

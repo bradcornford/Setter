@@ -56,7 +56,7 @@ class Setting extends SettingBase implements SettableInterface {
 			return $this->returnResults($results, $key);
 		}
 
-		if ($default) {
+		if ($default !== null) {
 			return $default;
 		}
 
