@@ -37,15 +37,18 @@ class SettingServiceProvider extends ServiceProvider {
 		$configPath = __DIR__ . '/../../config/config.php';
 		$this->mergeConfigFrom($configPath, 'googlmapper');
 
-		$this->app['setting'] = $this->app->share(function($app)
-		{
-			return new Setting(
-				$this->app->make('Illuminate\Database\DatabaseManager'),
-				$this->app->make('Illuminate\Config\Repository'),
-				$this->app->make('Illuminate\Cache\Repository'),
-				$app['config']->get('googlmapper')
-			);
-		});
+		$this->app->singleton(
+		    'setting',
+            function($app)
+            {
+                return new Setting(
+                    $this->app->make('Illuminate\Database\DatabaseManager'),
+                    $this->app->make('Illuminate\Config\Repository'),
+                    $this->app->make('Illuminate\Cache\Repository'),
+                    $app['config']->get('googlmapper')
+                );
+            }
+		);
 	}
 
 	/**
