@@ -220,6 +220,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('lists')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+        $repository->shouldReceive('has')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 
@@ -239,6 +240,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('lists')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+        $repository->shouldReceive('has')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 
@@ -258,6 +260,7 @@ class SettingSpec extends ObjectBehavior
 		$query->shouldReceive('lists')->andReturn(false);
 
 		$repository = Mockery::mock('Illuminate\Config\Repository');
+        $repository->shouldReceive('has')->andReturn(false);
 
 		$cache = Mockery::mock('Illuminate\Cache\Repository');
 
