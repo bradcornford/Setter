@@ -46,7 +46,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 */
 	public function get($key, $default = null)
 	{
-		if (!$this->getUncached() && $this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
+		if (!$this->getUncached() && $this->cacheEnabled() && $this->cacheHas($key)) {
 			return $this->returnCache($key);
 		}
 
@@ -87,7 +87,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 			->where('key', '=', $key)
 			->delete();
 
-		if ($this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
+		if ($this->cacheEnabled() && $this->cacheHas($key)) {
 			$this->cache
 				->forget($this->attachCacheTag($key));
 		}
@@ -104,7 +104,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 */
 	public function has($key)
 	{
-		if ($this->cacheEnabled() && $this->cacheHas($this->attachCacheTag($key))) {
+		if ($this->cacheEnabled() && $this->cacheHas($key)) {
 			$result = true;
 		} else {
 			$result = $this->database
