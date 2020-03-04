@@ -76,14 +76,14 @@ abstract class SettingBase {
 	 */
 	public function __construct(Query $database, Repository $config, Cache $cache, array $options = [])
 	{
-		$this->database = $database;
+		$this->databaseInstance = $database;
 		$this->config = $config;
 		$this->cache = $cache;
 
 		if (!isset($options['cache'])) {
 			throw new SettingArgumentException('Cache is required in boolean format.');
 		}
-		
+
 		if (!isset($options['tag'])) {
 			throw new SettingArgumentException('Tag is required in string format.');
 		}
