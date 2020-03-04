@@ -1,6 +1,6 @@
 {
     "name": "cornford/setter",
-    "description": "An easy way to intergrate Database Settings with Laravel.",
+    "description": "An easy way to integrate Database Settings with Laravel.",
     "keywords": ["laravel", "setting", "config", "configuration", "database"],
     "license": "MIT",
     "authors": [
@@ -10,20 +10,32 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
-        "illuminate/cache": "^5.0 || ^6.0",
-        "illuminate/config": "^5.0 || ^6.0",
-        "illuminate/database": "^5.0 || ^6.0",
-        "illuminate/support": "^5.0 || ^6.0"
+        "php": ">=7.2",
+        "ext-json": "*",
+        "illuminate/cache": "^6.0",
+        "illuminate/config": "^6.0",
+        "illuminate/database": "^6.0",
+        "illuminate/support": "^6.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "2.0.*@dev",
-        "mockery/mockery": "0.9.1"
+        "phpspec/phpspec": "^6.0",
+        "mockery/mockery": "^1.2.4",
+        "phpunit/phpunit": "^8.4"
     },
     "autoload": {
         "psr-0": {
             "Cornford\\Setter": "src/"
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cornford\\Setter\\Providers\\SettingServiceProvider"
+            ],
+            "aliases": {
+                "Setting": "Cornford\\Setter\\Facades\\SettingFacade"
+            }
+        }
+    }
 }

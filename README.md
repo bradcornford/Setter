@@ -5,7 +5,9 @@
 [![Build Status](https://travis-ci.org/bradcornford/Setter.svg?branch=master)](https://travis-ci.org/bradcornford/Setter)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bradcornford/Setter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bradcornford/Setter/?branch=master)
 
-### For Laravel 4.x, check [version 1.5.5](https://github.com/bradcornford/Setter/tree/v1.5.5)
+### For Laravel 5.x, check [version 2.4.0](https://github.com/bradcornford/Setter/tree/v1.5.5)
+
+### For Laravel 4.x, check [version 1.7.2](https://github.com/bradcornford/Setter/tree/v1.5.5)
 
 Think of Setter as an easy way to integrate Settings with Laravel, providing a variety of helpers to speed up the utilisation of application wide settings. These include:
 
@@ -22,7 +24,7 @@ Think of Setter as an easy way to integrate Settings with Laravel, providing a v
 Begin by installing this package through Composer. Edit your project's `composer.json` file to require `cornford/setter`.
 
 	"require": {
-		"cornford/setter": "2.*"
+		"cornford/setter": "3.*"
 	}
 
 Next, update Composer from the Terminal:
@@ -31,7 +33,7 @@ Next, update Composer from the Terminal:
 
 We now have to publish the packages assets with the following command:
 
-	php artisan vendor:publish --provider="Cornford\\Setter\\SettingServiceProvider"
+	php artisan vendor:publish --provider="Cornford\Setter\Providers\SettingServiceProvider" --tag=setting
 
 We now have to migrate the package database table with the following command:
 
@@ -39,17 +41,17 @@ We now have to migrate the package database table with the following command:
 
 Once this operation completes, the next step is to add the service provider. Open `config/app.php`, and add a new item to the providers array.
 
-	'Cornford\Setter\SettingServiceProvider',
+	Cornford\Setter\Providers\SettingServiceProvider::class,
 
 The final step is to introduce the facade. Open `config/app.php`, and add a new item to the aliases array.
 
-	'Setting'         => 'Cornford\Setter\Facades\SettingFacade',
+	'Setting' => Cornford\Setter\Facades\SettingFacade::class,
 
 That's it! You're all set to go.
 
 ## Configuration
 
-You can now configure Setter in a few simple steps. Open `app/config/packages/cornford/setter/config.php` and update the options as needed.
+You can now configure Setter in a few simple steps. Open `config/packages/cornford/setter/config.php` and update the options as needed.
 
 - `cache` - Enable caching to improve performance by reducing database calls.
 - `tag` - A tag prefixed to all cache items, e.g. tag::.

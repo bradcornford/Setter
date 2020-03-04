@@ -2,7 +2,7 @@
 
 use Cornford\Setter\Exceptions\SettingArgumentException;
 use DateTime;
-use Illuminate\Database\DatabaseManager as Query;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Config\Repository;
 use Illuminate\Cache\Repository as Cache;
 
@@ -53,7 +53,7 @@ abstract class SettingBase {
 	/**
 	 * Cache
 	 *
-	 * @var integer|datetime|boolean
+	 * @var boolean|integer|DateTime
 	 */
 	protected $cacheExpiry;
 
@@ -67,23 +67,23 @@ abstract class SettingBase {
 	/**
 	 * Construct Setter
 	 *
-	 * @param Query      $database
-	 * @param Repository $config
-	 * @param Cache      $cache
-	 * @param array      $options
+	 * @param DatabaseManager $database
+	 * @param Repository      $config
+	 * @param Cache           $cache
+	 * @param array           $options
 	 *
 	 * @throws SettingArgumentException
 	 */
-	public function __construct(Query $database, Repository $config, Cache $cache, array $options = [])
+	public function __construct(DatabaseManager $database, Repository $config, Cache $cache, array $options = [])
 	{
-		$this->database = $database;
+		$this->databaseInstance = $database;
 		$this->config = $config;
 		$this->cache = $cache;
 
 		if (!isset($options['cache'])) {
 			throw new SettingArgumentException('Cache is required in boolean format.');
 		}
-		
+
 		if (!isset($options['tag'])) {
 			throw new SettingArgumentException('Tag is required in string format.');
 		}

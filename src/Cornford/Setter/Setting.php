@@ -17,7 +17,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 */
 	public function set($key, $value)
 	{
-		$query = $this->database
+		$query = $this->databaseInstance
 			->table('settings');
 		$value = json_encode($value);
 
@@ -50,7 +50,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 			return $this->returnCache($key);
 		}
 
-		$results = $this->database
+		$results = $this->databaseInstance
 			->table('settings')
 			->where('settings.key', '=', $key)
 			->whereRaw('settings.key LIKE "' . $key . '.%"', array(), 'or')
@@ -62,10 +62,10 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 			return $this->returnResults($results, $key);
 		}
 
-        if ($this->configHas($key)) {
-            return $this->returnConfig($key);
-        }
-		
+		if ($this->configHas($key)) {
+			return $this->returnConfig($key);
+		}
+
 		if ($default !== null) {
 			return $default;
 		}
@@ -82,7 +82,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 */
 	public function forget($key)
 	{
-		$result = $this->database
+		$result = $this->databaseInstance
 			->table('settings')
 			->where('key', '=', $key)
 			->delete();
@@ -107,7 +107,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 		if ($this->cacheEnabled() && $this->cacheHas($key)) {
 			$result = true;
 		} else {
-			$result = $this->database
+			$result = $this->databaseInstance
 				->table('settings')
 				->select('settings.value')
 				->where('settings.key', '=', $key)
@@ -124,7 +124,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 */
 	public function all()
 	{
-		$results = $this->database
+		$results = $this->databaseInstance
 			->table('settings')
 			->lists('value', 'key');
 
@@ -138,12 +138,12 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 */
 	public function clear()
 	{
-		$result = $this->database
+		$result = $this->databaseInstance
 			->table('settings')
 			->truncate();
 
 		if ($this->cacheEnabled()) {
-			$this->cacheClear();			
+			$this->cacheClear();
 		}
 
 		return $result ? true : false;
@@ -212,11 +212,7 @@ class Setting extends SettingBase implements SettableInterface, CacheableInterfa
 	 */
 	public function cacheExpires($expiry)
 	{
-		if (!is_bool($expiry) && !is_integer($expiry) && !$expiry instanceof DateTime) {
-			throw new SettingArgumentException('Expiry is required in boolean, integer or DateTime format.');
-		}
-
-		$this->cacheExpiry = $expiry;
+		$this->setCacheExpiry($expiry);
 
 		return $this;
 	}

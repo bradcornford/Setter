@@ -1,4 +1,4 @@
-<?php namespace Cornford\Setter;
+<?php namespace Cornford\Setter\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -35,7 +35,7 @@ class SettingServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$configPath = __DIR__ . '/../../config/config.php';
-		$this->mergeConfigFrom($configPath, 'googlmapper');
+		$this->mergeConfigFrom($configPath, 'setting');
 
 		$this->app->singleton(
 		    'setting',
@@ -45,7 +45,7 @@ class SettingServiceProvider extends ServiceProvider {
                     $this->app->make('Illuminate\Database\DatabaseManager'),
                     $this->app->make('Illuminate\Config\Repository'),
                     $this->app->make('Illuminate\Cache\Repository'),
-                    $app['config']->get('googlmapper')
+                    $app['config']->get('setting')
                 );
             }
 		);
